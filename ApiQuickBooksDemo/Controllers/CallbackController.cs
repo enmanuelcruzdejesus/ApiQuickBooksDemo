@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ServiceStack.OrmLite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -7,6 +8,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using Webhooks.Models.DTO;
+using Webhooks.Models.Service;
 
 namespace ApiQuickBooksDemo.Controllers
 {
@@ -36,6 +39,14 @@ namespace ApiQuickBooksDemo.Controllers
 
             AppController.code = HttpContext.Current.Request.QueryString["code"] ?? "none";
             AppController.realmId = HttpContext.Current.Request.QueryString["realmId"] ?? "none";
+
+            DataServiceFactory.code = HttpContext.Current.Request.QueryString["code"] ?? "none";
+            DataServiceFactory.realmId = HttpContext.Current.Request.QueryString["realmId"] ?? "none";
+
+
+
+          
+
             await GetAuthTokensAsync(AppController.code, AppController.realmId);
             
 
@@ -49,14 +60,59 @@ namespace ApiQuickBooksDemo.Controllers
         private async Task GetAuthTokensAsync(string code, string realmId)
         {
 
-            var tokenResponse = await AppController.auth2Client.GetBearerTokenAsync(code);
+            var tokenResponse = await AppController.auth2Client.GetBearerTokenAsync(AppController.code);
+            var db = AppConfig.Instance().DbFactory.OpenDbConnection();
+            if(db.Select<OAuthTokens>().Count() < 1)
+            {
+                if (tokenResponse != null)
+                {
+                    //Save to token in db
 
-            //Save to token in db
+                    OAuthTokens authTokens = new OAuthTokens();
+                    authTokens.Id = 1;
+                    authTokens.realmid = HttpContext.Current.Request.QueryString["realmId"] ?? "none";
+                    authTokens.access_token = tokenResponse.AccessToken;
+                    authTokens.access_token_expires_at = tokenResponse.AccessTokenExpiresIn;
+                    authTokens.realmlastupdated = DateTime.Now;
+                    authTokens.refresh_token = tokenResponse.RefreshToken;
+                    authTokens.refresh_token_expires_at = tokenResponse.RefreshTokenExpiresIn;
+                    authTokens.access_secret = HttpContext.Current.Request.QueryString["code"] ?? "none";
+
+                    db.Insert(authTokens);
+
+
+                }
+            }
+
+           
+
+
+            //var tokenResponse = await AppController.auth2Client.GetBearerTokenAsync(code);
+
+            //if (tokenResponse!= null)
+            //{
+            //    //Save to token in db
+            //    var db = AppConfig.Instance().DbFactory.OpenDbConnection();
+            //    OAuthTokens authTokens = new OAuthTokens();
+            //    authTokens.access_token = tokenResponse.AccessToken;
+            //    authTokens.access_token_expires_at = tokenResponse.AccessTokenExpiresIn;
+            //    authTokens.refresh_token = tokenResponse.RefreshToken;
+            //    authTokens.refresh_token_expires_at = tokenResponse.RefreshTokenExpiresIn;
+            //    authTokens.access_secret =  
+
+
+            //}
 
 
 
 
-            AppController.Token = tokenResponse;
+
+
+
+
+            //AppController.Token = tokenResponse;
+
+
 
 
 
@@ -89,6 +145,8 @@ namespace ApiQuickBooksDemo.Controllers
 
             //var id = new ClaimsIdentity(claims, "Cookies");
             //Request.GetOwinContext().Authentication.SignIn(id);
+
+
         }
 
     }

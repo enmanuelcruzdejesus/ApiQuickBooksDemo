@@ -11,12 +11,13 @@ using System.Web.Http;
 
 namespace ApiQuickBooksDemo.Controllers
 {
+    [RoutePrefix("api/Items")]
     public class ItemsController : ApiController
     {
 
         [HttpGet]
-        [System.Web.Http.Route("AllCustomers")]
-        public HttpResponseMessage AllCustomers()
+        [System.Web.Http.Route("AllItems")]
+        public HttpResponseMessage AllItems()
         {
             var token = AppController.Token;
             var realmId = AppController.realmId;
@@ -35,8 +36,8 @@ namespace ApiQuickBooksDemo.Controllers
 
 
                 // Create a QuickBooks QueryService using ServiceContext
-                QueryService<Item> querySvc = new QueryService<Item>(serviceContext);
-                List<Item> itemInfo = querySvc.ExecuteIdsQuery("SELECT * FROM Item order by Id DESC ").ToList();
+                QueryService<Product> querySvc = new QueryService<Product>(serviceContext);
+                List<Product> itemInfo = querySvc.ExecuteIdsQuery("SELECT * FROM Item order by Id DESC ").ToList();
 
 
                 return Request.CreateResponse(HttpStatusCode.OK, itemInfo);
@@ -72,9 +73,9 @@ namespace ApiQuickBooksDemo.Controllers
 
 
                 // Create a QuickBooks QueryService using ServiceContext
-                QueryService<Item> querySvc = new QueryService<Item>(serviceContext);
+                QueryService<Product> querySvc = new QueryService<Product>(serviceContext);
 
-                List<Item> itemInfo = querySvc.ExecuteIdsQuery("SELECT * FROM Item where Id = " + "'" + id + "'").ToList();
+                List<Product> itemInfo = querySvc.ExecuteIdsQuery("SELECT * FROM Item where Id = " + "'" + id + "'").ToList();
 
 
                 return Request.CreateResponse(HttpStatusCode.OK, itemInfo);

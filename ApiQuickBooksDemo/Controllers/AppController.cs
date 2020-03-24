@@ -3,6 +3,7 @@ using Intuit.Ipp.Data;
 using Intuit.Ipp.OAuth2PlatformClient;
 using Intuit.Ipp.QueryFilter;
 using Intuit.Ipp.Security;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -14,6 +15,7 @@ using System.Security.Claims;
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
+using Webhooks.Models.DTO;
 using Webhooks.Models.Utility;
 
 namespace ApiQuickBooksDemo.Controllers
@@ -114,7 +116,8 @@ namespace ApiQuickBooksDemo.Controllers
                 //If request is valid, send 200 Status to webhooks sever
                 if (isRequestvalid == true)
                 {
-                    return Request.CreateResponse(HttpStatusCode.OK, jsonData);
+                    WebhooksNotificationdto.WebhooksData webhooksData = JsonConvert.DeserializeObject<WebhooksNotificationdto.WebhooksData>(jsonData);
+                    return Request.CreateResponse(HttpStatusCode.OK, webhooksData);
                 }
 
                 return Request.CreateResponse(HttpStatusCode.Conflict, "Error");

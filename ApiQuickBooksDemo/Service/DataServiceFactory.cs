@@ -57,7 +57,7 @@ namespace Webhooks.Models.Service
                     _serviceContext = new ServiceContext(realmId, IntuitServicesType.QBO, oauthValidator);
                     _serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
                     _serviceContext.IppConfiguration.Logger.RequestLog.EnableRequestResponseLogging = true;
-                    _serviceContext.IppConfiguration.Logger.RequestLog.ServiceRequestLoggingLocation = ConfigurationManager.AppSettings["ServiceRequestLoggingLocation"];
+                    //_serviceContext.IppConfiguration.Logger.RequestLog.ServiceRequestLoggingLocation = ConfigurationManager.AppSettings["ServiceRequestLoggingLocation"];
                     getServiceContext = _serviceContext;
                     _dataService = new DataService(_serviceContext);
 

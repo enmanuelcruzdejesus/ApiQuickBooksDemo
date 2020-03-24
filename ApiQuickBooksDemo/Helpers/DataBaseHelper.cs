@@ -61,6 +61,32 @@ namespace ApiQuickBooksDemo.Helpers
             return lastUpdate.ToString("yyyy-MM-dd HH:mm:ss.fff");
         }
 
+        public static Customers GetCustomer(Intuit.Ipp.Data.Customer cust)
+        {
+            Customers customer = new Customers();
+            customer.IdCustomer = Convert.ToInt16(cust.Id);
+            customer.IdCustomerRef= Convert.ToInt16(cust.Id);
+            customer.CompanyName = cust.CompanyName;
+            customer.Suffix = cust.Suffix;
+            customer.Title = cust.Title;
+            customer.CreditLimit = cust.CreditLimit;
+            customer.CreatedDate = cust.MetaData.CreateTime;
+            customer.LastUpdate = cust.MetaData.LastUpdatedTime;
+
+            if (cust.ShipAddr != null)
+            {
+                cust.ShipAddr.Country  =  cust.ShipAddr.Country;
+                customer.City = cust.ShipAddr.City;
+                customer.Latitude = Convert.ToDecimal(cust.ShipAddr.Long);
+                customer.Longitude = Convert.ToDecimal(cust.ShipAddr.Lat);
+
+            }
+           
+
+            return customer;
+
+        }
+
 
         //public static void PedidoMerge(string connectionString, pdpedidoshd Pedido)
         //{

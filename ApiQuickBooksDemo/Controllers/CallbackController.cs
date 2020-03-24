@@ -61,13 +61,16 @@ namespace ApiQuickBooksDemo.Controllers
         {
 
             var tokenResponse = await AppController.auth2Client.GetBearerTokenAsync(AppController.code);
+  
             var db = AppConfig.Instance().DbFactory.OpenDbConnection();
-            if(db.Select<OAuthTokens>().Count() < 1)
-            {
-                if (tokenResponse != null)
+          
+             if (tokenResponse != null)
+             {
+                 AppController.Token = tokenResponse;
+                 DataServiceFactory.Token = tokenResponse;
+                 //Save to token in db
+                 if(db.Select<OAuthTokens>().Count() < 1)
                 {
-                    //Save to token in db
-
                     OAuthTokens authTokens = new OAuthTokens();
                     authTokens.Id = 1;
                     authTokens.realmid = HttpContext.Current.Request.QueryString["realmId"] ?? "none";
@@ -82,7 +85,12 @@ namespace ApiQuickBooksDemo.Controllers
 
 
                 }
+
+
+
+
             }
+            
 
            
 

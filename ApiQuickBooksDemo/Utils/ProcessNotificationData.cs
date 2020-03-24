@@ -22,9 +22,14 @@ using System.Collections;
 using Webhooks.Models.Service;
 using System.Collections.Concurrent;
 using System.Configuration;
-
-
-
+using ApiQuickBooksDemo;
+using ApiQuickBooksDemo.Controllers;
+using Intuit.Ipp.QueryFilter;
+using Intuit.Ipp.Core;
+using Intuit.Ipp.Security;
+using ApiQuickBooksDemo.Helpers;
+using Z.Dapper.Plus;
+using ServiceStack.Data;
 
 namespace Webhooks.Models.Utility
 {
@@ -145,9 +150,45 @@ namespace Webhooks.Models.Utility
         {
             WebhooksNotificationdto.WebhooksData we = (WebhooksNotificationdto.WebhooksData)queueItem1;
 
+
             //Get realm from deserialized WebHooksData 
             foreach (WebhooksNotificationdto.EventNotifications eventNotifications in we.EventNotifications)
             {
+
+                foreach (var item in eventNotifications.DataEvents.Entities)
+                {
+
+                    if(item.Name == "Customer")
+                    {
+
+                        var db = AppConfig.Instance().DbFactory.OpenDbConnection();
+                        //getting customer
+                        var token = AppController.Token;
+                        var realmId = AppController.realmId;
+
+                        // var principal = User as ClaimsPrincipal;
+                        //OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(principal.FindFirst("access_token").Value);
+                        OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(token.AccessToken);
+
+                        // Create a ServiceContext with Auth tokens and realmId
+                        ServiceContext serviceContext = new ServiceContext(realmId, IntuitServicesType.QBO, oauthValidator);
+                        serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
+
+
+                        // Create a QuickBooks QueryService using ServiceContext
+                        QueryService<Intuit.Ipp.Data.Customer> querySvc = new QueryService<Intuit.Ipp.Data.Customer>(serviceContext);
+                        List<Intuit.Ipp.Data.Customer> customers = querySvc.ExecuteIdsQuery(string.Format("SELECT * FROM Customer Where Id = '{0}' ",item.Id)).ToList();
+                        var customer = DataBaseHelper.GetCustomer(customers.FirstOrDefault());
+
+                        var adoNetConn = ((IHasDbConnection)db).DbConnection;
+                        var sqlConnection = adoNetConn as SqlConnection;
+
+                        sqlConnection.BulkMerge(customer);
+
+                    }
+
+                }
+                 
 
                 //Update last updated time for each realm in DB
                 DBUtility.UpdateLastUpdatedDateDB(eventNotifications.RealmId);

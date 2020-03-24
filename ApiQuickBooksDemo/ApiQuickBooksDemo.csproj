@@ -424,7 +424,7 @@
     <Compile Include="Controllers\ItemsController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
-    <Compile Include="Customer.cs" />
+    <Compile Include="Customers.cs" />
     <Compile Include="Dtos\OAuthTokensRealmLastUpdateddto.cs" />
     <Compile Include="Dtos\WebhooksNotificationdto.cs" />
     <Compile Include="Global.asax.cs">

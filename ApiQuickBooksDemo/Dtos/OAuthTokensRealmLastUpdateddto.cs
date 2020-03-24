@@ -27,7 +27,7 @@ namespace Webhooks.Models.DTO
         //Get DB connection string from config where Oauth tokens and Realm's Last Updated time is saved
         public string ConnectionString
         {
-            get { return ConfigurationManager.ConnectionStrings["DBContext"].ToString(); }
+            get { return ConfigurationManager.ConnectionStrings["DB1"].ToString(); }
 
         }
 

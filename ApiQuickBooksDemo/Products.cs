@@ -1,12 +1,15 @@
-﻿using System;
+﻿using ServiceStack.DataAnnotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
 namespace ApiQuickBooksDemo
 {
-    public class Product
+    [Alias("Products")]
+    public class Products
     {
+        [PrimaryKey]
         public int IdProduct { get; set; }
         public int IdProductRef { get; set; }
         public string ProductName { get; set; }

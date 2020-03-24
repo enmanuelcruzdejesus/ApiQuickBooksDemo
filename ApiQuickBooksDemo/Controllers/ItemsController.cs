@@ -36,8 +36,8 @@ namespace ApiQuickBooksDemo.Controllers
 
 
                 // Create a QuickBooks QueryService using ServiceContext
-                QueryService<Product> querySvc = new QueryService<Product>(serviceContext);
-                List<Product> itemInfo = querySvc.ExecuteIdsQuery("SELECT * FROM Item order by Id DESC ").ToList();
+                QueryService<Item> querySvc = new QueryService<Item>(serviceContext);
+                List<Item> itemInfo = querySvc.ExecuteIdsQuery("SELECT * FROM Item order by Id DESC ").ToList();
 
 
                 return Request.CreateResponse(HttpStatusCode.OK, itemInfo);
@@ -73,9 +73,9 @@ namespace ApiQuickBooksDemo.Controllers
 
 
                 // Create a QuickBooks QueryService using ServiceContext
-                QueryService<Product> querySvc = new QueryService<Product>(serviceContext);
+                QueryService<Item> querySvc = new QueryService<Item>(serviceContext);
 
-                List<Product> itemInfo = querySvc.ExecuteIdsQuery("SELECT * FROM Item where Id = " + "'" + id + "'").ToList();
+                List<Item> itemInfo = querySvc.ExecuteIdsQuery("SELECT * FROM Item where Id = " + "'" + id + "'").ToList();
 
 
                 return Request.CreateResponse(HttpStatusCode.OK, itemInfo);

@@ -186,6 +186,36 @@ namespace Webhooks.Models.Utility
                         sqlConnection.BulkMerge(customer);
 
                     }
+                    
+                    if(item.Name == "Item")
+                    {
+
+                        var db = AppConfig.Instance().DbFactory.OpenDbConnection();
+                        //getting customer
+                        var token = AppController.Token;
+                        var realmId = AppController.realmId;
+
+                        // var principal = User as ClaimsPrincipal;
+                        //OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(principal.FindFirst("access_token").Value);
+                        OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(token.AccessToken);
+
+                        // Create a ServiceContext with Auth tokens and realmId
+                        ServiceContext serviceContext = new ServiceContext(realmId, IntuitServicesType.QBO, oauthValidator);
+                        serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
+
+
+                        // Create a QuickBooks QueryService using ServiceContext
+                        QueryService<Intuit.Ipp.Data.Item> querySvc = new QueryService<Intuit.Ipp.Data.Item>(serviceContext);
+                        List<Intuit.Ipp.Data.Item> products = querySvc.ExecuteIdsQuery(string.Format("SELECT * FROM Item Where Id = '{0}' ", item.Id)).ToList();
+                        var product = DataBaseHelper.GetProduct(products.FirstOrDefault());
+
+                        var adoNetConn = ((IHasDbConnection)db).DbConnection;
+                        var sqlConnection = adoNetConn as SqlConnection;
+
+                        sqlConnection.BulkMerge(product);
+
+
+                    }
 
                 }
                  

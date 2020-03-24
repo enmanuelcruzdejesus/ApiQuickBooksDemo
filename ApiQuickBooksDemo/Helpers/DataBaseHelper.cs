@@ -87,6 +87,27 @@ namespace ApiQuickBooksDemo.Helpers
 
         }
 
+        public static Products GetProduct(Intuit.Ipp.Data.Item item)
+        {
+            Products product = new Products();
+            product.IdProduct = Convert.ToInt16(item.Id);
+            product.IdProductRef = Convert.ToInt16(item.Id);
+            product.ProductName = item.Name;
+            product.UnitPrice = item.UnitPrice;
+            product.QtyOnHand = item.QtyOnHand;
+            product.CreatedDate = item.MetaData.CreateTime;
+            product.LastUpdate = item.MetaData.LastUpdatedTime;
+            product.Active = item.Active;
+            
+
+            return product;
+
+        }
+
+
+
+
+
 
         //public static void PedidoMerge(string connectionString, pdpedidoshd Pedido)
         //{
@@ -118,7 +139,7 @@ namespace ApiQuickBooksDemo.Helpers
         //                                        @userid,
         //                                        @created,
         //                                        @lastupdate)) as src
-                                                
+
         //                                    (cia,
         //                                     transaccion,
         //                                     sucursal,
@@ -143,7 +164,7 @@ namespace ApiQuickBooksDemo.Helpers
         //                                    ON src.cia = dest.cia AND src.transaccion = dest.transaccion 
         //                                WHEN MATCHED THEN
         //                                    UPDATE SET 
-	       //                                    [cedula_rnc] = src.cedula_rnc
+        //                                    [cedula_rnc] = src.cedula_rnc
         //                                      ,[nombre] = src.nombre
         //                                      ,[telefono_residencia] = src.telefono_residencia
         //                                      ,[comentario] = src.comentario
@@ -151,10 +172,10 @@ namespace ApiQuickBooksDemo.Helpers
         //                                      ,[fecha] = src.fecha
         //                                      ,[total_general] = src.total_general
         //                                      ,[estatus] = src.estatus
-                                       
+
         //                                WHEN NOT MATCHED THEN
         //                                    INSERT VALUES 
-		      //                                     (   
+        //                                     (   
         //                                             src.[cia],
         //                                             src.[transaccion],
         //                                             src.[sucursal],
@@ -224,7 +245,7 @@ namespace ApiQuickBooksDemo.Helpers
         //        lastupdate.Value = GetDataValue(Pedido.lastupdate);
 
         //        oCmd.ExecuteNonQuery();
-                
+
 
         //        oCmd.Dispose();
 
@@ -260,7 +281,7 @@ namespace ApiQuickBooksDemo.Helpers
         //                                        @userid,
         //                                        @created,
         //                                        @lastupdate)) as src
-                                                                                                
+
         //                                    (cia,
         //                                     transaccion,
         //                                     secuencia,
@@ -282,8 +303,8 @@ namespace ApiQuickBooksDemo.Helpers
         //                                    ON src.cia = dest.cia AND src.transaccion = dest.transaccion and src.producto = dest.producto
         //                                WHEN MATCHED THEN
         //                                    UPDATE SET 
-                                                   
-	       //                                    [cantidad_pedido] = src.cantidad_pedido
+
+        //                                    [cantidad_pedido] = src.cantidad_pedido
         //                                      ,[precio_pedido] = src.precio_pedido
         //                                      ,[precio_contado] = src.precio_contado
         //                                      ,[total] = src.total
@@ -293,10 +314,10 @@ namespace ApiQuickBooksDemo.Helpers
         //                                      ,[valor_cuotas_credito] = src.valor_cuotas_credito
         //                                      ,[reg_activo] = src.reg_activo
         //                                      ,[lastupdate] = src.lastupdate
-                                       
+
         //                                WHEN NOT MATCHED THEN
         //                                    INSERT VALUES 
-		      //                                     (   
+        //                                     (   
         //                                             src.[cia],
         //                                             src.[transaccion],
         //                                             src.[secuencia],
@@ -364,10 +385,10 @@ namespace ApiQuickBooksDemo.Helpers
 
 
         //        }
-               
 
 
-              
+
+
 
 
         //        oCmd.Dispose();

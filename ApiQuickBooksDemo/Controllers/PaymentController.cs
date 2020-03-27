@@ -48,17 +48,16 @@ namespace ApiQuickBooksDemo.Controllers
                     payment.TotalAmt = 1500;
                     payment.TotalAmtSpecified = true;
                     payment.PaymentMethodRef = new ReferenceType() { Value = "1" };
-
-                    var resultPayment = dataService.Add(payment);
-                    return Request.CreateResponse(HttpStatusCode.OK, resultPayment);
-
-
+                    payment.LinkedTxn = new LinkedTxn[] { new LinkedTxn() { TxnId = invoice.Id , TxnType = "Invoice" } };
                 }
+         
                 else
                 {
                     return Request.CreateErrorResponse(HttpStatusCode.BadGateway, "The invoie is invalid");
   
                 }
+                var resultPayment = dataService.Add(payment);
+                return Request.CreateResponse(HttpStatusCode.OK, resultPayment);
 
 
 

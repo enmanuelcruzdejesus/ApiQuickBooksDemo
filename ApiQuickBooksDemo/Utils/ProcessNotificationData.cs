@@ -30,6 +30,7 @@ using Intuit.Ipp.Security;
 using ApiQuickBooksDemo.Helpers;
 using Z.Dapper.Plus;
 using ServiceStack.Data;
+using ApiQuickBooksDemo.Models;
 
 namespace Webhooks.Models.Utility
 {
@@ -216,6 +217,55 @@ namespace Webhooks.Models.Utility
 
 
                     }
+
+                    if(item.Name == "Invoice")
+                    {
+                        var db = AppConfig.Instance().DbFactory.OpenDbConnection();
+                        //getting customer
+                        var token = AppController.Token;
+                        var realmId = AppController.realmId;
+
+                        // var principal = User as ClaimsPrincipal;
+                        //OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(principal.FindFirst("access_token").Value);
+                        OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(token.AccessToken);
+
+                        // Create a ServiceContext with Auth tokens and realmId
+                        ServiceContext serviceContext = new ServiceContext(realmId, IntuitServicesType.QBO, oauthValidator);
+                        serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
+
+
+                        // Create a QuickBooks QueryService using ServiceContext
+                        QueryService<Intuit.Ipp.Data.Invoice> querySvc = new QueryService<Intuit.Ipp.Data.Invoice>(serviceContext);
+                        List<Intuit.Ipp.Data.Invoice> invoices = querySvc.ExecuteIdsQuery(string.Format("SELECT * FROM Invoice  Where Id = '{0}' ", item.Id)).ToList();
+                        var inv = DataBaseHelper.GetInvoice(invoices.FirstOrDefault());
+
+                        var adoNetConn = ((IHasDbConnection)db).DbConnection;
+                        var sqlConnection = adoNetConn as SqlConnection;
+                        var detail = inv.InvoiceDetails;
+
+                        if (item.Operation == "Update")
+                            inv.LastUpdate = DateTime.Now;
+
+                        
+
+                        sqlConnection.BulkMerge<Invoices>(inv);
+
+                        var invoiceId =   DataBaseHelper.GetInvoiceIdByRef(inv.IdInvoiceRef);
+                        detail.ForEach((x) => 
+                        {
+                            x.IdInvoice = invoiceId;
+                        });
+
+
+                        sqlConnection.BulkMerge<InvoiceDetails>(detail);
+
+
+
+
+
+
+                    }
+
 
                 }
                  

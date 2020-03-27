@@ -15,7 +15,35 @@ namespace ApiQuickBooksDemo.Controllers
 {
     public class InvoiceController : ApiController
     {
+        public async  Task<HttpResponseMessage> Get()
+        {
+            try
+            {
+                var token = AppController.Token;
+                var realmId = AppController.realmId;
 
+                // var principal = User as ClaimsPrincipal;
+                //OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(principal.FindFirst("access_token").Value);
+                OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(token.AccessToken);
+
+                // Create a ServiceContext with Auth tokens and realmId
+                ServiceContext serviceContext = new ServiceContext(realmId, IntuitServicesType.QBO, oauthValidator);
+                serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
+
+                DataService dataService = new DataService(serviceContext);
+
+                //looking for invoice 
+                QueryService<Invoice> invoiceQueryService = new QueryService<Invoice>(serviceContext);
+                List<Invoice> invoices = invoiceQueryService.ExecuteIdsQuery("Select * From Invoice ORDER BY Id DESC").ToList();
+
+                return Request.CreateResponse(HttpStatusCode.OK, invoices);
+
+            }
+            catch(Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
         public async Task<HttpResponseMessage> Get(string id)
         {
             try

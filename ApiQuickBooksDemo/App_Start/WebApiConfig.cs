@@ -21,8 +21,6 @@ namespace ApiQuickBooksDemo
             );
             
 
-
-
             config.Formatters.JsonFormatter.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
         }
     }

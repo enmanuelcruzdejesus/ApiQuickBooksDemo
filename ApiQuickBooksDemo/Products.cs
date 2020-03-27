@@ -10,8 +10,9 @@ namespace ApiQuickBooksDemo
     public class Products
     {
         [PrimaryKey]
+        [AutoIncrement]
         public int IdProduct { get; set; }
-        public int IdProductRef { get; set; }
+        public string IdProductRef { get; set; }
         public string ProductName { get; set; }
         public int IdCategory { get; set; }
         public decimal UnitPrice { get; set; }

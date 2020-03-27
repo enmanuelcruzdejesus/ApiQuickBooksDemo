@@ -1,4 +1,6 @@
 ﻿
+using ApiQuickBooksDemo.Models;
+using Intuit.Ipp.Data;
 using ServiceStack.Data;
 using ServiceStack.OrmLite;
 using System;
@@ -61,12 +63,60 @@ namespace ApiQuickBooksDemo.Helpers
             return lastUpdate.ToString("yyyy-MM-dd HH:mm:ss.fff");
         }
 
+
+        public static int GetCustomerIdByRef(string customerRef)
+        {
+            var db = AppConfig.Instance().DbFactory.OpenDbConnection();
+            var i = db.Single<Customers>(c => c.IdCustomerRef == customerRef);
+            if (i != null)
+                return i.IdCustomer;
+
+            return -1;
+
+        }
+
+
+        public static int GetProductIdByRef(string ItemRef)
+        {
+            var db = AppConfig.Instance().DbFactory.OpenDbConnection();
+            var i = db.Single<Products>(p => p.IdProductRef == ItemRef);
+            if (i != null)
+                return i.IdProduct;
+
+            return -1;
+
+        }
+
+        public  static int GetInvoiceIdByRef(string IdRef)
+        {
+
+            var db = AppConfig.Instance().DbFactory.OpenDbConnection();
+            var i = db.Single<Invoices>(p => p.IdInvoiceRef == IdRef);
+            if (i != null)
+                return i.IdInvoice;
+
+            return -1;
+
+        }
+
+        public static int GetInvoiceDetailId(int IdInvoice, int productId)
+        {
+            var db = AppConfig.Instance().DbFactory.OpenDbConnection();
+            var i = db.Single<InvoiceDetails>(d => d.IdInvoice == IdInvoice && d.IdItem == productId);
+            if (i != null)
+                return i.Id;
+
+            return -1;
+        }
+
         public static Customers GetCustomer(Intuit.Ipp.Data.Customer cust)
         {
             Customers customer = new Customers();
-            customer.IdCustomer = Convert.ToInt16(cust.Id);
-            customer.IdCustomerRef= Convert.ToInt16(cust.Id);
+            customer.IdCustomer = GetCustomerIdByRef(cust.Id);
+            customer.IdCustomerRef = cust.Id;
             customer.CompanyName = cust.CompanyName;
+            if(cust.Mobile!=null)
+              customer.MobilePhone = cust.Mobile.Id; ;
             customer.Suffix = cust.Suffix;
             customer.Title = cust.Title;
             customer.CreditLimit = cust.CreditLimit;
@@ -90,8 +140,8 @@ namespace ApiQuickBooksDemo.Helpers
         public static Products GetProduct(Intuit.Ipp.Data.Item item)
         {
             Products product = new Products();
-            product.IdProduct = Convert.ToInt16(item.Id);
-            product.IdProductRef = Convert.ToInt16(item.Id);
+            product.IdProduct = GetProductIdByRef(item.Id);
+            product.IdProductRef = item.Id;
             product.ProductName = item.Name;
             product.UnitPrice = item.UnitPrice;
             product.QtyOnHand = item.QtyOnHand;
@@ -103,7 +153,67 @@ namespace ApiQuickBooksDemo.Helpers
             return product;
 
         }
+        
 
+        public static Invoices GetInvoice(Intuit.Ipp.Data.Invoice invoice)
+        {
+            Invoices inv = new Invoices();
+            inv.IdInvoice = GetInvoiceIdByRef(invoice.Id);
+            inv.IdInvoiceRef = invoice.Id;
+            inv.DocNumber = Convert.ToInt32(invoice.DocNumber);
+            inv.IdCustomer = GetCustomerIdByRef(invoice.CustomerRef.Value);
+            inv.DueDate = invoice.DueDate;
+            inv.Balance = invoice.Balance;
+            inv.NetAmountTaxable = 0;
+            inv.TotalTax = invoice.TxnTaxDetail.TotalTax;
+            inv.TotalAmt = invoice.TotalAmt;
+
+            //  inv.TaxPercent = invoice.TxnTaxDetail.TxnTaxCodeRef.Value;
+            if(invoice.ShipAddr != null)
+            {
+                inv.City = invoice.ShipAddr.City;
+                inv.Line1 = invoice.ShipAddr.Line1;
+                inv.PostalCode = invoice.ShipAddr.PostalCode;
+                inv.Latitude = Convert.ToDecimal(invoice.ShipAddr.Lat);
+                inv.Longitude = Convert.ToDecimal(invoice.ShipAddr.Long);
+            }
+           
+            inv.Status = invoice.invoiceStatus;
+            inv.CreatedDate = invoice.MetaData.CreateTime;
+            inv.LastUpdate = invoice.MetaData.LastUpdatedTime;
+
+            List<InvoiceDetails> detail = new List<InvoiceDetails>();
+            List<Line> lines = new List<Line>();
+
+            foreach (var item in invoice.Line)
+            {
+                if(item.DetailType == LineDetailTypeEnum.SalesItemLineDetail)
+                {
+                    InvoiceDetails line = new InvoiceDetails();
+                    var itemRef = (SalesItemLineDetail)(item.AnyIntuitObject);
+                    int IdItem = DataBaseHelper.GetProductIdByRef(itemRef.ItemRef.Value);
+
+                    line.Id = GetInvoiceDetailId(inv.IdInvoice,IdItem);
+                    line.IdItem = IdItem;
+                    line.Description = item.Description;
+                    line.Quantity = (int)itemRef.Qty;
+                    line.UnitPrice = Convert.ToDecimal(itemRef.AnyIntuitObject);
+                    line.Amount = item.Amount;
+                    line.CreatedDate = invoice.MetaData.CreateTime;
+                    line.LastUpdate = invoice.MetaData.LastUpdatedTime;
+
+                    detail.Add(line);
+                }
+             
+
+
+
+            }
+
+            inv.InvoiceDetails = detail;
+
+            return inv;
+        }
 
 
 

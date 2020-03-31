@@ -1,16 +1,12 @@
-﻿using ServiceStack.DataAnnotations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
 
-namespace ApiQuickBooksDemo
+namespace ApiQuickBooksDemo.Entities
 {
-    [Alias("Products")]
     public class Products
     {
-        [PrimaryKey]
-        [AutoIncrement]
         public int IdProduct { get; set; }
         public string IdProductRef { get; set; }
         public string ProductName { get; set; }
@@ -20,6 +16,5 @@ namespace ApiQuickBooksDemo
         public bool Active { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime LastUpdate { get; set; }
-
     }
 }

@@ -424,20 +424,26 @@
     <Compile Include="Controllers\ItemsController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
-    <Compile Include="Customers.cs" />
     <Compile Include="Dtos\OAuthTokensRealmLastUpdateddto.cs" />
     <Compile Include="Dtos\WebhooksNotificationdto.cs" />
+    <Compile Include="Entities\Cutomers.cs" />
+    <Compile Include="Entities\DeliveryOrders.cs" />
+    <Compile Include="Entities\InvoiceDetails.cs" />
+    <Compile Include="Entities\Invoices.cs" />
+    <Compile Include="Entities\Payments.cs" />
+    <Compile Include="Entities\Products.cs" />
+    <Compile Include="Entities\Roles.cs" />
+    <Compile Include="Entities\SalesOrders.cs" />
+    <Compile Include="Entities\SalesOrdersDetail.cs" />
+    <Compile Include="Entities\SyncTables.cs" />
+    <Compile Include="Entities\Users.cs" />
+    <Compile Include="Entities\VendorVisits.cs" />
+    <Compile Include="Entities\Visited.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\DataBaseHelper.cs" />
-    <Compile Include="InvoiceDetails.cs" />
-    <Compile Include="Invoices.cs" />
-    <Compile Include="Payments.cs" />
-    <Compile Include="Products.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SalesOrders.cs" />
-    <Compile Include="SalesOrdersDetail.cs" />
     <Compile Include="Service\CDCSyncService.cs" />
     <Compile Include="Service\DataServiceFactory.cs" />
     <Compile Include="SessionableControllerHandler.cs" />

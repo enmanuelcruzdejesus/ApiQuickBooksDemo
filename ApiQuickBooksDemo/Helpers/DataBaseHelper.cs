@@ -1,5 +1,6 @@
 ﻿
-using ApiQuickBooksDemo.Models;
+
+using ApiQuickBooksDemo.Entities;
 using Intuit.Ipp.Data;
 using ServiceStack.Data;
 using ServiceStack.OrmLite;
@@ -102,7 +103,7 @@ namespace ApiQuickBooksDemo.Helpers
         public static int GetInvoiceDetailId(int IdInvoice, int productId)
         {
             var db = AppConfig.Instance().DbFactory.OpenDbConnection();
-            var i = db.Single<InvoiceDetails>(d => d.IdInvoice == IdInvoice && d.IdItem == productId);
+            var i = db.Single<InvoiceDetails>(d => d.InvoicesId == IdInvoice && d.IdItem == productId);
             if (i != null)
                 return i.Id;
 

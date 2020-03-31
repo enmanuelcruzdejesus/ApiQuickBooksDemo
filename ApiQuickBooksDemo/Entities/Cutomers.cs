@@ -1,16 +1,12 @@
-﻿using ServiceStack.DataAnnotations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
 
-namespace ApiQuickBooksDemo
+namespace ApiQuickBooksDemo.Entities
 {
-    [Alias("Customers")]
     public class Customers
     {
-        [PrimaryKey]
-        [AutoIncrement]
         public int IdCustomer { get; set; }
         public string IdCustomerRef { get; set; }
         public string CompanyName { get; set; }
@@ -26,6 +22,5 @@ namespace ApiQuickBooksDemo
         public decimal CreditLimit { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime LastUpdate { get; set; }
-
     }
 }

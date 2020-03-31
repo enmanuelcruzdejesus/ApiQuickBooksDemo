@@ -444,8 +444,11 @@
     </Compile>
     <Compile Include="Helpers\DataBaseHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service\CDCSyncService.cs" />
-    <Compile Include="Service\DataServiceFactory.cs" />
+    <Compile Include="Services\CDCSyncService.cs" />
+    <Compile Include="Services\Database.cs" />
+    <Compile Include="Services\DataServiceFactory.cs" />
+    <Compile Include="Services\IRepository.cs" />
+    <Compile Include="Services\ServiceStackRepository.cs" />
     <Compile Include="SessionableControllerHandler.cs" />
     <Compile Include="SessionStateRouteHandler.cs" />
     <Compile Include="Utils\DBUtility.cs" />

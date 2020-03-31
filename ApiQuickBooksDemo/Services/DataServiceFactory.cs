@@ -14,7 +14,7 @@ using System.Linq;
 using System.Web;
 using Webhooks.Models.DTO;
 
-namespace Webhooks.Models.Service
+namespace Webhooks.Models.Services
 {
     public class DataServiceFactory
     {

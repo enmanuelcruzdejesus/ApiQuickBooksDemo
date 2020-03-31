@@ -15,10 +15,10 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using Webhooks.Models.DTO;
-using Webhooks.Models.Service;
+using Webhooks.Models.Services;
 using System.Configuration;
 
-namespace Webhooks.Models.Service
+namespace Webhooks.Models.Services
 {
     public class CDCSyncService
     {

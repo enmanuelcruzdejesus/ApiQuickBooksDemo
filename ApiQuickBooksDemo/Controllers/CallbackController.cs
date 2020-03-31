@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using Webhooks.Models.DTO;
-using Webhooks.Models.Service;
+using Webhooks.Models.Services;
 
 namespace ApiQuickBooksDemo.Controllers
 {

@@ -1,71 +1,63 @@
-﻿using Intuit.Ipp.Core;
-using Intuit.Ipp.Data;
-using Intuit.Ipp.DataService;
-using Intuit.Ipp.QueryFilter;
-using Intuit.Ipp.Security;
+﻿using ApiCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace ApiQuickBooksDemo.Controllers
 {
     public class InvoiceController : ApiController
     {
-        public async  Task<HttpResponseMessage> Get()
+        [HttpGet]
+        public HttpResponseMessage Get()
         {
             try
             {
-                var token = AppController.Token;
-                var realmId = AppController.realmId;
 
-                // var principal = User as ClaimsPrincipal;
-                //OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(principal.FindFirst("access_token").Value);
-                OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(token.AccessToken);
-
-                // Create a ServiceContext with Auth tokens and realmId
-                ServiceContext serviceContext = new ServiceContext(realmId, IntuitServicesType.QBO, oauthValidator);
-                serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
-
-                DataService dataService = new DataService(serviceContext);
-
-                //looking for invoice 
-                QueryService<Invoice> invoiceQueryService = new QueryService<Invoice>(serviceContext);
-                List<Invoice> invoices = invoiceQueryService.ExecuteIdsQuery("Select * From Invoice ORDER BY Id DESC").ToList();
+                var invoices = AppConfig.Instance().Db.Invoices.GetLoadRerefence();
 
                 return Request.CreateResponse(HttpStatusCode.OK, invoices);
 
+
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
+
         }
-        public async Task<HttpResponseMessage> Get(string id)
+
+
+        [HttpGet]
+        public HttpResponseMessage Get(int id)
         {
             try
             {
-                var token = AppController.Token;
-                var realmId = AppController.realmId;
 
-                // var principal = User as ClaimsPrincipal;
-                //OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(principal.FindFirst("access_token").Value);
-                OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(token.AccessToken);
+                if (id > 0)
+                {
 
-                // Create a ServiceContext with Auth tokens and realmId
-                ServiceContext serviceContext = new ServiceContext(realmId, IntuitServicesType.QBO, oauthValidator);
-                serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
 
-                DataService dataService = new DataService(serviceContext);
-                //looking for invoice 
-                QueryService<Invoice> itemQueryService = new QueryService<Invoice>(serviceContext);
-                Invoice invoice = itemQueryService.ExecuteIdsQuery(string.Format("Select * From Invoice Where CustomerRef = '{0}' StartPosition 1 MaxResults 1", id)).FirstOrDefault();
+                    var lastUpdateSync = AppConfig.Instance().Db.GetLastUpdateDate(id, "Invoices");
+                    var invoices = AppConfig.Instance().Db.Invoices.Get(i => i.IdVendor == id && i.LastUpdate > lastUpdateSync);
+                    if (invoices.Count() > 0)
+                        return Request.CreateResponse(HttpStatusCode.OK, invoices);
 
-                return Request.CreateResponse(HttpStatusCode.OK, invoice);
-      
+
+                       return Request.CreateResponse(HttpStatusCode.NoContent, invoices);
+
+
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid Id");
+                }
+
+
 
             }
             catch (Exception ex)
@@ -73,6 +65,7 @@ namespace ApiQuickBooksDemo.Controllers
 
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
+;
 
         }
 

@@ -1,5 +1,4 @@
-﻿
-using ApiCore;
+﻿using ApiCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +8,7 @@ using System.Web.Http;
 
 namespace ApiQuickBooksDemo.Controllers
 {
-    public class CustomerController : ApiController
+    public class ProductController : ApiController
     {
         [HttpGet]
         public HttpResponseMessage Get()
@@ -17,16 +16,17 @@ namespace ApiQuickBooksDemo.Controllers
             try
             {
 
-                var customers = AppConfig.Instance().Db.Customers.GetAll();
-                return Request.CreateResponse(HttpStatusCode.OK, customers);
+                var products = AppConfig.Instance().Db.Products.GetAll();
+                return Request.CreateResponse(HttpStatusCode.OK, products);
              
+
 
 
             }
             catch (Exception ex)
             {
 
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError,ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
 
         }
@@ -42,18 +42,18 @@ namespace ApiQuickBooksDemo.Controllers
                 {
 
 
-                    var lastUpdateSync = AppConfig.Instance().Db.GetLastUpdateDate(Convert.ToInt32(id), "Customers");
-                    var customers = AppConfig.Instance().Db.Customers.Get(c => c.LastUpdate > lastUpdateSync);
-                    if (customers.Count() > 0)
-                        return Request.CreateResponse(HttpStatusCode.OK, customers);
+                    var lastUpdateSync = AppConfig.Instance().Db.GetLastUpdateDate(Convert.ToInt32(id), "Products");
+                    var products = AppConfig.Instance().Db.Products.Get(c => c.LastUpdate > lastUpdateSync);
+                    if (products.Count() > 0)
+                        Request.CreateResponse(HttpStatusCode.OK, products);
 
 
-                      return Request.CreateResponse(HttpStatusCode.NoContent, customers);
+                    return Request.CreateResponse(HttpStatusCode.NoContent, products);
 
                 }
                 else
                 {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Id is invalid");
+                    return Request.CreateResponse(HttpStatusCode.BadRequest,"Invalid Id");
                 }
 
 
@@ -64,7 +64,7 @@ namespace ApiQuickBooksDemo.Controllers
 
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
-;
+
 
         }
     }

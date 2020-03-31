@@ -13,6 +13,7 @@ namespace ApiQuickBooksDemo.Entities
         [AutoIncrement]
   
         public int Id { get; set; }
+        public int IdInvoice { get; set; }
 
         [Alias("IdInvoice")]
         public int InvoicesId { get; set; }

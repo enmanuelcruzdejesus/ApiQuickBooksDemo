@@ -19,7 +19,6 @@ using System.Data;
 using System.Data.OleDb;
 using Webhooks.Models.DTO;
 using System.Collections;
-using Webhooks.Models.Service;
 using System.Collections.Concurrent;
 using System.Configuration;
 using ApiQuickBooksDemo;
@@ -30,7 +29,8 @@ using Intuit.Ipp.Security;
 using ApiQuickBooksDemo.Helpers;
 using Z.Dapper.Plus;
 using ServiceStack.Data;
-using ApiQuickBooksDemo.Models;
+using ApiQuickBooksDemo.Entities;
+using ApiCore;
 
 namespace Webhooks.Models.Utility
 {
@@ -244,7 +244,13 @@ namespace Webhooks.Models.Utility
                         var detail = inv.InvoiceDetails;
 
                         if (item.Operation == "Update")
+                        {
+
                             inv.LastUpdate = DateTime.Now;
+
+
+                        }
+                           
 
                         
 
@@ -253,6 +259,7 @@ namespace Webhooks.Models.Utility
                         var invoiceId =   DataBaseHelper.GetInvoiceIdByRef(inv.IdInvoiceRef);
                         detail.ForEach((x) => 
                         {
+                            x.InvoicesId = invoiceId;
                             x.IdInvoice = invoiceId;
                         });
 

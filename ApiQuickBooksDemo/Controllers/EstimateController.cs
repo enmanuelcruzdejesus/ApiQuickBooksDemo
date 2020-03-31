@@ -1,4 +1,5 @@
-﻿using ApiQuickBooksDemo.Entities;
+﻿using ApiCore;
+using ApiQuickBooksDemo.Entities;
 using Intuit.Ipp.Core;
 using Intuit.Ipp.Data;
 using Intuit.Ipp.DataService;

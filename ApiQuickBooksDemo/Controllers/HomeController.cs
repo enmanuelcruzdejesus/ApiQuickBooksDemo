@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace ApiQuickBooksDemo.Controllers
+namespace VentasRancherasWebApi.Controllers
 {
     public class HomeController : Controller
     {

@@ -1,5 +1,6 @@
 ﻿
 
+using ApiCore;
 using ApiQuickBooksDemo.Entities;
 using Intuit.Ipp.Data;
 using ServiceStack.Data;
@@ -128,8 +129,16 @@ namespace ApiQuickBooksDemo.Helpers
             {
                 cust.ShipAddr.Country  =  cust.ShipAddr.Country;
                 customer.City = cust.ShipAddr.City;
-                customer.Latitude = Convert.ToDecimal(cust.ShipAddr.Long);
-                customer.Longitude = Convert.ToDecimal(cust.ShipAddr.Lat);
+                decimal lat = 0;
+                decimal longitude = 0;
+
+                if (Decimal.TryParse(cust.ShipAddr.Lat, out lat))
+                    customer.Latitude = lat;
+
+                if (Decimal.TryParse(cust.ShipAddr.Long, out longitude))
+                    customer.Longitude = lat;
+
+             
 
             }
            

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 
-namespace VentasRancherasApi.Services
+namespace ApiQuickBooksDemo.Services
 {
     public class Database
     {

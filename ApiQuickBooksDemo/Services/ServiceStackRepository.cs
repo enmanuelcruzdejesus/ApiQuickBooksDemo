@@ -10,7 +10,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Z.Dapper.Plus;
 
-namespace VentasRancherasApi.Services
+namespace ApiCore.Services
 {
     public class ServiceStackRepository<TEntity> : IRepository<TEntity> where TEntity : new()
     {

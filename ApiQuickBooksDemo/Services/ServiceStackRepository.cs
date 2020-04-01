@@ -72,6 +72,15 @@ namespace ApiCore.Services
 
         }
 
+        public IEnumerable<TEntity> GetByIds(int[] ids)
+        {
+            using (var db = _dbFactory.Open())
+            {             
+               return  db.SelectByIds<TEntity>(ids);
+            }
+        }
+
+
         public int Insert(TEntity entity)
         {
             using (var db = _dbFactory.Open())
@@ -152,5 +161,6 @@ namespace ApiCore.Services
 
         }
 
+     
     }
 }

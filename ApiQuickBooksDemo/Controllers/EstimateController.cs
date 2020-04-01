@@ -1,5 +1,6 @@
 ﻿using ApiCore;
 using ApiQuickBooksDemo.Entities;
+using ApiQuickBooksDemo.Helpers;
 using Intuit.Ipp.Core;
 using Intuit.Ipp.Data;
 using Intuit.Ipp.DataService;
@@ -53,7 +54,7 @@ namespace ApiQuickBooksDemo.Controllers
 
                 orders.ForEach((o) => 
                 {
-                    Estimate e = GetEstimate(o);
+                    Estimate e = DataBaseHelper.GetEstimate(o);
                     estimates.Add(e);
                 });
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ApiQuickBooksDemo.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -12,7 +13,7 @@ namespace ApiQuickBooksDemo
 {
     public class WebApiApplication : System.Web.HttpApplication
     {
-        protected void Application_Start()
+        protected async void Application_Start()
         {
             Init();
             AreaRegistration.RegisterAllAreas();
@@ -20,6 +21,7 @@ namespace ApiQuickBooksDemo
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            await JobScheduler.Start();
         }
 
         public override void Init()

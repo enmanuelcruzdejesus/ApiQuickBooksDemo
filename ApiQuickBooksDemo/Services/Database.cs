@@ -23,6 +23,9 @@ namespace ApiQuickBooksDemo.Services
         private IRepository<Roles> _roles = null;
         private IRepository<Users> _users = null;
         private IRepository<SyncTables> _syncTables = null;
+        private IRepository<TransactionSyncLog> _transSyncLog = null;
+
+
         private string _connectionString;
         private IDbConnectionFactory _dbFactory;
 
@@ -133,6 +136,17 @@ namespace ApiQuickBooksDemo.Services
                     _syncTables = new ServiceStackRepository<SyncTables>(_dbFactory);
 
                 return _syncTables;
+            }
+        }
+
+        public IRepository<TransactionSyncLog> TransSyncLog
+        {
+            get
+            {
+                if (_transSyncLog == null)
+                    _transSyncLog = new ServiceStackRepository<TransactionSyncLog>(_dbFactory);
+
+                return _transSyncLog;
             }
         }
 

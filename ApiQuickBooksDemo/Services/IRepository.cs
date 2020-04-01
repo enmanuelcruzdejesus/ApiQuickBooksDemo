@@ -22,6 +22,8 @@ namespace ApiCore.Services
 
         TEntity GetById(object id);
 
+        IEnumerable<TEntity> GetByIds(int[] ids);
+
 
         int Update(TEntity entity);
 

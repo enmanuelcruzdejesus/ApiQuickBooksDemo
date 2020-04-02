@@ -133,6 +133,14 @@ namespace ApiCore.Services
 
             }
         }
+        public int DeleteAll()
+        {
+            using (var db = _dbFactory.Open())
+            {
+                return db.DeleteAll<TEntity>();
+
+            }
+        }
 
 
         public object BulkInsert(IEnumerable<TEntity> entities)
@@ -161,6 +169,6 @@ namespace ApiCore.Services
 
         }
 
-     
+      
     }
 }

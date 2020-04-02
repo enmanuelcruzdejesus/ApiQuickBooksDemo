@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Configuration;
+using System.Linq;
 using ApiQuickBooksDemo.Services;
 using Intuit.Ipp.OAuth2PlatformClient;
 
 using ServiceStack.Data;
 using ServiceStack.OrmLite;
-
+using Webhooks.Models.DTO;
+using Webhooks.Models.Services;
 
 namespace ApiCore
 {
@@ -15,14 +17,21 @@ namespace ApiCore
         private static AppConfig _instance;
         private static string _connectionString;
         private static IDbConnectionFactory _dbFactory;
+
+
         #endregion
 
 
         private Database _db = null;
+        private OAuthTokens _oAuthToken;
+        private DataServiceFactory _serviceFactory;
+
+
 
         public static string code;
         public static string realmId;
         public static TokenResponse Token;
+        
 
         private static string clientid = ConfigurationManager.AppSettings["clientid"];
         private static string clientsecret = ConfigurationManager.AppSettings["clientsecret"];
@@ -30,6 +39,8 @@ namespace ApiCore
         private static string environment = ConfigurationManager.AppSettings["appEnvironment"];
 
         private static OAuth2Client _auth2Client = null;
+        
+
 
         public OAuth2Client Auth2Client
         {
@@ -38,6 +49,9 @@ namespace ApiCore
                 return _auth2Client;
             }
         }
+
+
+        
         public Database Db
         {
             get
@@ -48,8 +62,6 @@ namespace ApiCore
                 return _db;
             }
         }
-
-
 
 
 
@@ -64,11 +76,19 @@ namespace ApiCore
         #endregion
 
 
+
+
         #region GETTERS AND SETTERS
         public static AppConfig Instance()
         {
             if (_instance == null)
+            {
                 _instance = new AppConfig();
+                
+
+
+            }
+                
 
             return _instance;
         }
@@ -81,6 +101,23 @@ namespace ApiCore
             }
         }
         public IDbConnectionFactory DbFactory { get { return _dbFactory; } }
+
+        public DataServiceFactory ServiceFactory
+        {
+            get
+            {
+                if(_serviceFactory == null)
+                {
+                    var oauthToken = Db.Tokens.GetAll().FirstOrDefault();
+                    if(oauthToken != null)
+                        _serviceFactory = new DataServiceFactory(oauthToken);
+
+                }
+
+                return _serviceFactory;
+            }
+        }
+
 
 
 

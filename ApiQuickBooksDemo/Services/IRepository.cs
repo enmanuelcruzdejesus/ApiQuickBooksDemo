@@ -36,6 +36,9 @@ namespace ApiCore.Services
 
         int Delete(TEntity entity);
 
+        int DeleteAll();
+
+
 
 
 

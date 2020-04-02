@@ -44,6 +44,44 @@ namespace ApiQuickBooksDemo.Controllers
                 if (!string.IsNullOrEmpty(id) && !string.IsNullOrWhiteSpace(id))
                 {
 
+
+                    var vendorVisits = AppConfig.Instance().Db.VendorVisits.Get(v => v.IdVendorVisit == Convert.ToInt32(id));
+                    if (vendorVisits.Count() > 0)
+                        return Request.CreateResponse(HttpStatusCode.OK, vendorVisits);
+
+
+                    return Request.CreateResponse(HttpStatusCode.NoContent, "");
+
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid Id");
+                }
+
+
+
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+;
+
+        }
+
+
+
+        [HttpGet]
+        [Route("Download")]
+        public HttpResponseMessage DownLoad(string id)
+        {
+            try
+            {
+
+                if (!string.IsNullOrEmpty(id) && !string.IsNullOrWhiteSpace(id))
+                {
+
                     
                     var lastUpdateSync = AppConfig.Instance().Db.GetLastUpdateDate(Convert.ToInt32(id), "VendorVisits");
                     var vendorVisits = AppConfig.Instance().Db.VendorVisits.Get(v => v.IdVendor == Convert.ToInt32(id) && v.LastUpdate > lastUpdateSync);

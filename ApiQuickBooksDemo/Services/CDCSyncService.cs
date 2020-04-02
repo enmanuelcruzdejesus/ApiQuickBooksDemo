@@ -37,7 +37,15 @@ namespace Webhooks.Models.Services
             //syncObjects = new CDCSyncdto();
 
         }
-        
+
+        public CDCSyncService(OAuthTokens token)
+        {
+            dataserviceFactory = new DataServiceFactory(token);
+            dataService = dataserviceFactory.getDataService();
+            //syncObjects = new CDCSyncdto();
+
+        }
+
         public ServiceContext ServiceContext { get { return dataserviceFactory.getServiceContext; } }
         
         

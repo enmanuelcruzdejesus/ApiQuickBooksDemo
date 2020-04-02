@@ -15,7 +15,7 @@ using System.Web.Http;
 
 namespace ApiQuickBooksDemo.Controllers
 {
-    [RoutePrefix("api/Customer")]
+    [RoutePrefix("api/QboCustomerController")]
     public class QboCustomerController : ApiController
     {
 
@@ -30,17 +30,18 @@ namespace ApiQuickBooksDemo.Controllers
 
             try
             {
-                // var principal = User as ClaimsPrincipal;
-                //OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(principal.FindFirst("access_token").Value);
-                OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(token.AccessToken);
+                //// var principal = User as ClaimsPrincipal;
+                ////OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(principal.FindFirst("access_token").Value);
+                //OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(token.AccessToken);
 
-                // Create a ServiceContext with Auth tokens and realmId
-                ServiceContext serviceContext = new ServiceContext(realmId, IntuitServicesType.QBO, oauthValidator);
-                serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
+                //// Create a ServiceContext with Auth tokens and realmId
+                //ServiceContext serviceContext = new ServiceContext(realmId, IntuitServicesType.QBO, oauthValidator);
+                //serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
 
-
-                // Create a QuickBooks QueryService using ServiceContext
+                var serviceContext = AppConfig.Instance().ServiceFactory.getServiceContext;
+                //// Create a QuickBooks QueryService using ServiceContext
                 QueryService<Customer> querySvc = new QueryService<Customer>(serviceContext);
+               
                 List<Customer> customerInfo = querySvc.ExecuteIdsQuery("SELECT * FROM Customer order by Id DESC ").ToList();
 
 
@@ -70,10 +71,10 @@ namespace ApiQuickBooksDemo.Controllers
             {
                 // var principal = User as ClaimsPrincipal;
                 //OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(principal.FindFirst("access_token").Value);
-                OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(token.AccessToken);
+                //OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(token.AccessToken);
 
                 // Create a ServiceContext with Auth tokens and realmId
-                ServiceContext serviceContext = new ServiceContext(realmId, IntuitServicesType.QBO, oauthValidator);
+                ServiceContext serviceContext = AppConfig.Instance().ServiceFactory.getServiceContext;
                 serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
 
 

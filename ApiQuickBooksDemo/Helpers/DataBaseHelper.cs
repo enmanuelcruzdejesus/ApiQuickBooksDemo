@@ -134,6 +134,17 @@ namespace ApiQuickBooksDemo.Helpers
             return -1;
         }
 
+
+        public static int GetOrderIdByRef(string Id)
+        {
+            var db = AppConfig.Instance().DbFactory.OpenDbConnection();
+            var i = db.Single<SalesOrders>(s => s.IdOrderRef == Id);
+            if (i != null)
+                return i.IdOrder;
+
+            return -1;
+        }
+
         public static Customers GetCustomer(Intuit.Ipp.Data.Customer cust)
         {
             Customers customer = new Customers();
@@ -186,13 +197,21 @@ namespace ApiQuickBooksDemo.Helpers
             return product;
 
         }
+
+
+        
         
 
         public static Invoices GetInvoice(Intuit.Ipp.Data.Invoice invoice)
         {
+
+            var orderRef = invoice.LinkedTxn.FirstOrDefault().TxnId;
+            var IdOrder = GetOrderIdByRef(orderRef);
+
             Invoices inv = new Invoices();
             inv.IdInvoice = GetInvoiceIdByRef(invoice.Id);
             inv.IdInvoiceRef = invoice.Id;
+            inv.IdOrder = IdOrder;
             inv.DocNumber = Convert.ToInt32(invoice.DocNumber);
             inv.IdCustomer = GetCustomerIdByRef(invoice.CustomerRef.Value);
             inv.DueDate = invoice.DueDate;
@@ -200,6 +219,7 @@ namespace ApiQuickBooksDemo.Helpers
             inv.NetAmountTaxable = 0;
             inv.TotalTax = invoice.TxnTaxDetail.TotalTax;
             inv.TotalAmt = invoice.TotalAmt;
+            
 
             //  inv.TaxPercent = invoice.TxnTaxDetail.TxnTaxCodeRef.Value;
             if(invoice.ShipAddr != null)
@@ -250,15 +270,26 @@ namespace ApiQuickBooksDemo.Helpers
 
         public  static Estimate GetEstimate(SalesOrders order)
         {
-
+            var customerRef = GetCustomerRef(order.IdCustomer);
             Estimate estimate = new Estimate();
-            estimate.CustomerRef = new ReferenceType() { Value = order.IdCustomer.ToString() };
+            estimate.CustomerRef = new ReferenceType() { Value = customerRef };
             estimate.TotalAmt = order.TotalAmt;
-            estimate.TxnDate = DateTime.Now;
+            estimate.TxnDate = order.OrderDate;
             estimate.TxnDateSpecified = true;
             estimate.TxnTaxDetail = new TxnTaxDetail() { TotalTax = 0 };
             estimate.AutoDocNumber = true;
+            estimate.TrackingNum = order.IdOrder.ToString();
             estimate.AutoDocNumberSpecified = true;
+            //estimate.CustomField = new CustomField[] 
+            //{
+            //    new CustomField()
+            //    {
+            //        DefinitionId = "1",
+            //        Name = "IdOrder",
+            //        AnyIntuitObject = order.IdOrder.ToString()
+                    
+            //    }
+            //};
 
 
             //DueDate
@@ -329,6 +360,7 @@ namespace ApiQuickBooksDemo.Helpers
             Payment p = new Payment();
             var customerRef = GetCustomerRef(payment.IdCustomer);
             var invoiceRef = GetInvoiceRef(payment.IdInvoice);
+
            
             p.CustomerRef = new ReferenceType() { Value = customerRef };
             p.TotalAmt = payment.TotalAmt;

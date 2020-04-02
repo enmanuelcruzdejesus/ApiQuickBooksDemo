@@ -1,8 +1,10 @@
 ﻿using ApiCore;
+using ApiQuickBooksDemo.Entities;
 using ApiQuickBooksDemo.Helpers;
 using Intuit.Ipp.Core;
 using Intuit.Ipp.Data;
 using Intuit.Ipp.DataService;
+using Intuit.Ipp.QueryFilter;
 using Intuit.Ipp.Security;
 using Quartz;
 using ServiceStack.OrmLite;
@@ -22,134 +24,148 @@ namespace ApiQuickBooksDemo.Services
             {
                 ///Execty==
                 ///
-                if(AppConfig.Token != null)
+
+                if(AppConfig.Instance().ServiceFactory!= null)
                 {
                     Console.WriteLine("QBO JOB EXECUTING!!!");
-                    var lastUpdateOrdersSync = AppConfig.Instance().Db.GetLastUpdateDate(100, "SalesOrders");
-                    var lastUpdatePaymentSync = AppConfig.Instance().Db.GetLastUpdateDate(100, "Payments");
+                    var db = AppConfig.Instance().Db;
+                    var lastUpdateOrdersSync = db.GetLastUpdateDate(100, "SalesOrders");
+                    var lastUpdatePaymentSync =  db.GetLastUpdateDate(100, "Payments");
 
-
-                    
-                    var t1Inserted = AppConfig.Instance().Db.TransSyncLog.Get(t => t.TableName == "SalesOrders" && t.Operation == "Insert" && t.CreatedDate > lastUpdateOrdersSync).Select(x => x.TransId);
-                    var t1Updated = AppConfig.Instance().Db.TransSyncLog.Get(t => t.TableName == "SalesOrders" && t.Operation == "Update" && t.CreatedDate > lastUpdateOrdersSync).Select(x => x.TransId); ;
-
-                    var t2Inserted = AppConfig.Instance().Db.TransSyncLog.Get(t => t.TableName == "Payments" && t.Operation == "Insert" && t.CreatedDate > lastUpdatePaymentSync).Select(x => x.TransId); ;
-                    var t2Updated = AppConfig.Instance().Db.TransSyncLog.Get(t => t.TableName == "Payments" && t.Operation == "Update" && t.CreatedDate > lastUpdatePaymentSync).Select(x => x.TransId); ;
-
-                    //Getting sales orders and payments
-                    var insertedOrders = AppConfig.Instance().Db.SalesOrders.GetLoadRerefence().Where(s => Sql.In(s.IdOrder, t1Inserted));
-                    var updatedOrders = AppConfig.Instance().Db.SalesOrders.GetLoadRerefence().Where(s => Sql.In(s.IdOrder, t1Updated));
-
-                    var insertedPayments = AppConfig.Instance().Db.Payments.GetLoadRerefence().Where(p => Sql.In(p.IdPayment, t2Inserted));
-                    var updatedPayments = AppConfig.Instance().Db.Payments.GetLoadRerefence().Where(p => Sql.In(p.IdPayment, t2Updated));
-
-
-
-
-                    //Creating Batch
-                    var token = AppConfig.Token;
-                    var realmId = AppConfig.realmId;
-
-
-                    OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(token.AccessToken);
-
-                    // Create a ServiceContext with Auth tokens and realmId
-                    ServiceContext serviceContext = new ServiceContext(realmId, IntuitServicesType.QBO, oauthValidator);
-                    serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
-
-                    DataService dataService = new DataService(serviceContext);
-
-
-                    Batch batch = dataService.CreateNewBatch();
-
-                    //converting orders in estimates
-                    List<Estimate> insertedEstimates = new List<Estimate>();
-                    List<Estimate> updatedEstimates = new List<Estimate>();
-
-
-                    List<Payment> ptsInserted = new List<Payment>();
-                    List<Payment> ptsUpdated = new List<Payment>();
-
-
-                    foreach (var o in insertedOrders)
+                    if(AppConfig.Instance().Db.TransSyncLog.Get(x => x.CreatedDate > lastUpdateOrdersSync).Count() > 0 )
                     {
+                        var t1Inserted = db.TransSyncLog.Get(t => t.TableName == "SalesOrders" && t.Operation == "Insert" && t.CreatedDate > lastUpdateOrdersSync).Select(x => x.TransId);
+                        var t1Updated = db.TransSyncLog.Get(t => t.TableName == "SalesOrders" && t.Operation == "Update" && t.CreatedDate > lastUpdateOrdersSync).Select(x => x.TransId); ;
 
-                        Estimate e = DataBaseHelper.GetEstimate(o);
-                        insertedEstimates.Add(e);
-                    }
+                        var t2Inserted = db.TransSyncLog.Get(t => t.TableName == "Payments" && t.Operation == "Insert" && t.CreatedDate > lastUpdatePaymentSync).Select(x => x.TransId); ;
+                        var t2Updated = db.TransSyncLog.Get(t => t.TableName == "Payments" && t.Operation == "Update" && t.CreatedDate > lastUpdatePaymentSync).Select(x => x.TransId); ;
 
+                        //Getting sales orders and payments
+                        var insertedOrders = db.SalesOrders.GetLoadRerefence().Where(s => Sql.In(s.IdOrder, t1Inserted));
+                        var updatedOrders = db.SalesOrders.GetLoadRerefence().Where(s => Sql.In(s.IdOrder, t1Updated));
 
-                    foreach (var o in updatedOrders)
-                    {
-
-                        Estimate e = DataBaseHelper.GetEstimate(o);
-                        updatedEstimates.Add(e);
-                    }
-
-                    foreach (var p in insertedPayments)
-                    {
-
-                        Payment pt = DataBaseHelper.GetPayment(p);
-                        ptsInserted.Add(pt);
-                    }
-
-
-                    foreach (var p in updatedPayments)
-                    {
-
-                        Payment pt = DataBaseHelper.GetPayment(p);
-                        ptsUpdated.Add(pt);
-                    }
+                        var insertedPayments = db.Payments.GetAll().Where(p => Sql.In(p.IdPayment, t2Inserted));
+                        var updatedPayments = db.Payments.GetAll().Where(p => Sql.In(p.IdPayment, t2Updated));
 
 
 
 
-                    for (int i = 0; i < insertedEstimates.Count; i++)
-                    {
-                        batch.Add(insertedEstimates[i], string.Format("bID-inserted{0}", i+insertedEstimates.Count), OperationEnum.create);
-                    }
-
-                    for (int i = 0; i < updatedEstimates.Count; i++)
-                    {
-                        batch.Add(updatedEstimates[i], string.Format("bID-udpated{0}", i + updatedEstimates.Count), OperationEnum.update);
-                    }
+                        //Creating Batch
+                        var dataService = AppConfig.Instance().ServiceFactory.getDataService();
 
 
-                    for (int i = 0; i < ptsInserted.Count; i++)
-                    {
-                        batch.Add(ptsInserted[i], string.Format("bID-inserted{0}", i + ptsInserted.Count), OperationEnum.create);
-                    }
+                        Batch batch = dataService.CreateNewBatch();
 
-                    for (int i = 0; i < ptsUpdated.Count; i++)
-                    {
-                        batch.Add(ptsUpdated[i], string.Format("bID-updated{0}", i), OperationEnum.update);
-                    }
-
-                    batch.Execute();
-
-                    //IntuitBatchResponse addEstimateResponse = batch["bID1"];
-                    //if (addEstimateResponse.ResponseType == ResponseType.Entity)
-                    //{
-                    //    Estimate addedEstimate = addEstimateResponse.Entity as Estimate;
-                    //}
+                        //converting orders in estimates
+                        List<Estimate> insertedEstimates = new List<Estimate>();
+                        List<Estimate> updatedEstimates = new List<Estimate>();
 
 
-
+                        List<Payment> ptsInserted = new List<Payment>();
+                        List<Payment> ptsUpdated = new List<Payment>();
 
               
 
 
 
+                        foreach (var o in insertedOrders)
+                        {
+
+                            Estimate e = DataBaseHelper.GetEstimate(o);
+                            insertedEstimates.Add(e);
+                        
+                        }
+
+
+                        foreach (var o in updatedOrders)
+                        {
+
+                            Estimate e = DataBaseHelper.GetEstimate(o);
+                            updatedEstimates.Add(e);
+                        }
+
+                        foreach (var p in insertedPayments)
+                        {
+
+                            Payment pt = DataBaseHelper.GetPayment(p);
+                            ptsInserted.Add(pt);
+                           
+                        }
+
+
+                        foreach (var p in updatedPayments)
+                        {
+
+                            Payment pt = DataBaseHelper.GetPayment(p);
+                            ptsUpdated.Add(pt);
+                        }
+
+
+
+
+                        for (int i = 0; i < insertedEstimates.Count; i++)
+                        {
+                            batch.Add(insertedEstimates[i], string.Format("bID-salesOrders{0}", i + insertedEstimates.Count), OperationEnum.create);
+                        }
+
+                        for (int i = 0; i < updatedEstimates.Count; i++)
+                        {
+                            batch.Add(updatedEstimates[i], string.Format("bID-salesOrdersudpated{0}", i + updatedEstimates.Count), OperationEnum.update);
+                        }
+
+
+                        for (int i = 0; i < ptsInserted.Count; i++)
+                        {
+                            batch.Add(ptsInserted[i], string.Format("bID-paymentsinserted{0}", i + ptsInserted.Count), OperationEnum.create);
+                        }
+
+                        for (int i = 0; i < ptsUpdated.Count; i++)
+                        {
+                            batch.Add(ptsUpdated[i], string.Format("bID-paymentsupdated{0}", i), OperationEnum.update);
+                        }
+
+                        batch.Execute();
+
+                        foreach (var item in batch.IntuitBatchItemResponses)
+                        {
+                            if(item.ResponseType == ResponseType.Entity)
+                            {
+                                if(item.Entity is Estimate)
+                                {
+                                    var estimate = (Estimate)item.Entity;
+                                    var IdOrder = Convert.ToInt32(estimate.TrackingNum);
+                                    var order = db.SalesOrders.GetById(IdOrder);
+                                    order.IdOrderRef = estimate.Id;
+                                    db.SalesOrders.Update(order, x => x.IdOrder == IdOrder);
+
+
+                                }
+
+                                if(item.Entity is Payment)
+                                {
+
+
+                                }
+                            }
+
+                        }
+
+                  
+
+                     
+
+                        //updating sync table
+                        db.SyncTables.Update(new SyncTables() { IdVendor = 100, LastUpdateSync = DateTime.Now }, s => s.IdVendor == 100);
+
+                        //Updating OrderRef 
+                  
+
+                    }
 
 
 
 
                 }
-
-
-
-
-
 
 
             });

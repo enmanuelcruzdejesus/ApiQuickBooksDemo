@@ -30,7 +30,7 @@ namespace ApiQuickBooksDemo.Services
             .WithIdentity("trigger1", "group1")
             .StartNow()
             .WithSimpleSchedule(x => x
-                .WithIntervalInSeconds(40)
+                .WithIntervalInSeconds(90)
                 .RepeatForever())
             .Build();
 

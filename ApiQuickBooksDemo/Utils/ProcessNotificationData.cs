@@ -158,22 +158,24 @@ namespace Webhooks.Models.Utility
 
                 foreach (var item in eventNotifications.DataEvents.Entities)
                 {
+                    ServiceContext serviceContext = AppConfig.Instance().ServiceFactory.getServiceContext;
+                    var db = AppConfig.Instance().Db;
 
-                    if(item.Name == "Customer")
+                    if (item.Name == "Customer")
                     {
 
-                        var db = AppConfig.Instance().DbFactory.OpenDbConnection();
-                        //getting customer
-                        var token = AppController.Token;
-                        var realmId = AppController.realmId;
+                        //var db = AppConfig.Instance().DbFactory.OpenDbConnection();
+                        ////getting customer
+                        //var token = AppController.Token;
+                        //var realmId = AppController.realmId;
 
-                        // var principal = User as ClaimsPrincipal;
-                        //OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(principal.FindFirst("access_token").Value);
-                        OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(token.AccessToken);
+                        //// var principal = User as ClaimsPrincipal;
+                        ////OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(principal.FindFirst("access_token").Value);
+                        //OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(token.AccessToken);
 
-                        // Create a ServiceContext with Auth tokens and realmId
-                        ServiceContext serviceContext = new ServiceContext(realmId, IntuitServicesType.QBO, oauthValidator);
-                        serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
+                        //// Create a ServiceContext with Auth tokens and realmId
+                        //ServiceContext serviceContext = new ServiceContext(realmId, IntuitServicesType.QBO, oauthValidator);
+                        //serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
 
 
                         // Create a QuickBooks QueryService using ServiceContext
@@ -181,28 +183,27 @@ namespace Webhooks.Models.Utility
                         List<Intuit.Ipp.Data.Customer> customers = querySvc.ExecuteIdsQuery(string.Format("SELECT * FROM Customer Where Id = '{0}' ",item.Id)).ToList();
                         var customer = DataBaseHelper.GetCustomer(customers.FirstOrDefault());
 
-                        var adoNetConn = ((IHasDbConnection)db).DbConnection;
-                        var sqlConnection = adoNetConn as SqlConnection;
+                      
 
-                        sqlConnection.BulkMerge(customer);
+                        db.Customers.BulkMerge(new Customers[] {  customer });
 
                     }
                     
                     if(item.Name == "Item")
                     {
 
-                        var db = AppConfig.Instance().DbFactory.OpenDbConnection();
-                        //getting customer
-                        var token = AppController.Token;
-                        var realmId = AppController.realmId;
+                        //var db = AppConfig.Instance().DbFactory.OpenDbConnection();
+                        ////getting customer
+                        //var token = AppController.Token;
+                        //var realmId = AppController.realmId;
 
-                        // var principal = User as ClaimsPrincipal;
-                        //OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(principal.FindFirst("access_token").Value);
-                        OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(token.AccessToken);
+                        //// var principal = User as ClaimsPrincipal;
+                        ////OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(principal.FindFirst("access_token").Value);
+                        //OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(token.AccessToken);
 
-                        // Create a ServiceContext with Auth tokens and realmId
-                        ServiceContext serviceContext = new ServiceContext(realmId, IntuitServicesType.QBO, oauthValidator);
-                        serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
+                        //// Create a ServiceContext with Auth tokens and realmId
+                        //ServiceContext serviceContext = new ServiceContext(realmId, IntuitServicesType.QBO, oauthValidator);
+                        //serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
 
 
                         // Create a QuickBooks QueryService using ServiceContext
@@ -210,37 +211,33 @@ namespace Webhooks.Models.Utility
                         List<Intuit.Ipp.Data.Item> products = querySvc.ExecuteIdsQuery(string.Format("SELECT * FROM Item Where Id = '{0}' ", item.Id)).ToList();
                         var product = DataBaseHelper.GetProduct(products.FirstOrDefault());
 
-                        var adoNetConn = ((IHasDbConnection)db).DbConnection;
-                        var sqlConnection = adoNetConn as SqlConnection;
-
-                        sqlConnection.BulkMerge(product);
+                      
+ 
+                        db.Products.BulkMerge(new Products[] { product });
 
 
                     }
 
                     if(item.Name == "Invoice")
                     {
-                        var db = AppConfig.Instance().DbFactory.OpenDbConnection();
-                        //getting customer
-                        var token = AppController.Token;
-                        var realmId = AppController.realmId;
+                        //var db = AppConfig.Instance().DbFactory.OpenDbConnection();
+                        ////getting customer
+                        //var token = AppController.Token;
+                        //var realmId = AppController.realmId;
 
-                        // var principal = User as ClaimsPrincipal;
-                        //OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(principal.FindFirst("access_token").Value);
-                        OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(token.AccessToken);
+                        //// var principal = User as ClaimsPrincipal;
+                        ////OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(principal.FindFirst("access_token").Value);
+                        //OAuth2RequestValidator oauthValidator = new OAuth2RequestValidator(token.AccessToken);
 
                         // Create a ServiceContext with Auth tokens and realmId
-                        ServiceContext serviceContext = new ServiceContext(realmId, IntuitServicesType.QBO, oauthValidator);
-                        serviceContext.IppConfiguration.MinorVersion.Qbo = "23";
+                       
+          
 
 
                         // Create a QuickBooks QueryService using ServiceContext
                         QueryService<Intuit.Ipp.Data.Invoice> querySvc = new QueryService<Intuit.Ipp.Data.Invoice>(serviceContext);
                         List<Intuit.Ipp.Data.Invoice> invoices = querySvc.ExecuteIdsQuery(string.Format("SELECT * FROM Invoice  Where Id = '{0}' ", item.Id)).ToList();
                         var inv = DataBaseHelper.GetInvoice(invoices.FirstOrDefault());
-
-                        var adoNetConn = ((IHasDbConnection)db).DbConnection;
-                        var sqlConnection = adoNetConn as SqlConnection;
                         var detail = inv.InvoiceDetails;
 
                         if (item.Operation == "Update")
@@ -250,11 +247,11 @@ namespace Webhooks.Models.Utility
 
 
                         }
+
                            
 
-                        
-
-                        sqlConnection.BulkMerge<Invoices>(inv);
+  
+                        db.Invoices.BulkMerge(new Invoices[] { inv });
 
                         var invoiceId =   DataBaseHelper.GetInvoiceIdByRef(inv.IdInvoiceRef);
                         detail.ForEach((x) => 
@@ -264,7 +261,7 @@ namespace Webhooks.Models.Utility
                         });
 
 
-                        sqlConnection.BulkMerge<InvoiceDetails>(detail);
+                        db.InvoiceDetails.BulkMerge(detail);
 
 
 
@@ -272,6 +269,7 @@ namespace Webhooks.Models.Utility
 
 
                     }
+
 
 
                 }

@@ -29,24 +29,14 @@ namespace ApiQuickBooksDemo.Controllers
         {
             //Sync the state info and update if it is not the same
             var state = HttpContext.Current.Request.QueryString["state"];
-            //if (state.Equals(AppController.auth2Client.CSRFToken, StringComparison.Ordinal))
-            //{
-            //    ViewBag.State = state + " (valid)";
-            //}
-            //else
-            //{
-            //    ViewBag.State = state + " (invalid)";
-            //}
-
+         
             AppController.code = HttpContext.Current.Request.QueryString["code"] ?? "none";
             AppController.realmId = HttpContext.Current.Request.QueryString["realmId"] ?? "none";
 
-            DataServiceFactory.code = HttpContext.Current.Request.QueryString["code"] ?? "none";
-            DataServiceFactory.realmId = HttpContext.Current.Request.QueryString["realmId"] ?? "none";
 
+            AppConfig.code = HttpContext.Current.Request.QueryString["code"] ?? "none";
+            AppConfig.realmId = HttpContext.Current.Request.QueryString["realmId"] ?? "none";
 
-
-          
 
             await GetAuthTokensAsync(AppController.code, AppController.realmId);
             
@@ -61,17 +51,20 @@ namespace ApiQuickBooksDemo.Controllers
         private async Task GetAuthTokensAsync(string code, string realmId)
         {
 
-            var tokenResponse = await AppController.auth2Client.GetBearerTokenAsync(AppController.code);
-  
-            var db = AppConfig.Instance().DbFactory.OpenDbConnection();
-          
+            var tokenResponse = await AppConfig.Instance().Auth2Client.GetBearerTokenAsync(AppConfig.code);        
+            var db = AppConfig.Instance().Db;
              if (tokenResponse != null)
              {
+
                  AppController.Token = tokenResponse;
-                 DataServiceFactory.Token = tokenResponse;
-                 //Save to token in db
-                 if(db.Select<OAuthTokens>().Count() < 1)
+          
+                //Save to token in db
+                if (db.Tokens.GetAll().Count() > 0)
+                    db.Tokens.DeleteAll();
+
+                else
                 {
+
                     OAuthTokens authTokens = new OAuthTokens();
                     authTokens.Id = 1;
                     authTokens.realmid = HttpContext.Current.Request.QueryString["realmId"] ?? "none";
@@ -81,9 +74,7 @@ namespace ApiQuickBooksDemo.Controllers
                     authTokens.refresh_token = tokenResponse.RefreshToken;
                     authTokens.refresh_token_expires_at = tokenResponse.RefreshTokenExpiresIn;
                     authTokens.access_secret = HttpContext.Current.Request.QueryString["code"] ?? "none";
-
-                    db.Insert(authTokens);
-
+                    db.Tokens.Insert(authTokens);
 
                 }
 
@@ -92,68 +83,6 @@ namespace ApiQuickBooksDemo.Controllers
 
             }
             
-
-           
-
-
-            //var tokenResponse = await AppController.auth2Client.GetBearerTokenAsync(code);
-
-            //if (tokenResponse!= null)
-            //{
-            //    //Save to token in db
-            //    var db = AppConfig.Instance().DbFactory.OpenDbConnection();
-            //    OAuthTokens authTokens = new OAuthTokens();
-            //    authTokens.access_token = tokenResponse.AccessToken;
-            //    authTokens.access_token_expires_at = tokenResponse.AccessTokenExpiresIn;
-            //    authTokens.refresh_token = tokenResponse.RefreshToken;
-            //    authTokens.refresh_token_expires_at = tokenResponse.RefreshTokenExpiresIn;
-            //    authTokens.access_secret =  
-
-
-            //}
-
-
-
-
-
-
-
-
-            //AppController.Token = tokenResponse;
-
-
-
-
-
-            //if (realmId != null)
-            //{
-            //    HttpContext.Current.Session["realmId"] = realmId;
-            //}
-
-            //Request.GetOwinContext().Authentication.SignOut("TempState");
-            //var tokenResponse = await AppController.auth2Client.GetBearerTokenAsync(code);
-
-            //var claims = new List<Claim>();
-
-            //if (HttpContext.Current.Session["realmId"] != null)
-            //{
-            //    claims.Add(new Claim("realmId", HttpContext.Current.Session["realmId"].ToString()));
-            //}
-
-            //if (!string.IsNullOrWhiteSpace(tokenResponse.AccessToken))
-            //{
-            //    claims.Add(new Claim("access_token", tokenResponse.AccessToken));
-            //    claims.Add(new Claim("access_token_expires_at", (DateTime.Now.AddSeconds(tokenResponse.AccessTokenExpiresIn)).ToString()));
-            //}
-
-            //if (!string.IsNullOrWhiteSpace(tokenResponse.RefreshToken))
-            //{
-            //    claims.Add(new Claim("refresh_token", tokenResponse.RefreshToken));
-            //    claims.Add(new Claim("refresh_token_expires_at", (DateTime.Now.AddSeconds(tokenResponse.RefreshTokenExpiresIn)).ToString()));
-            //}
-
-            //var id = new ClaimsIdentity(claims, "Cookies");
-            //Request.GetOwinContext().Authentication.SignIn(id);
 
 
         }

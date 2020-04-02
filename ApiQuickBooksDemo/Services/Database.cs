@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Webhooks.Models.DTO;
 
 namespace ApiQuickBooksDemo.Services
 {
@@ -19,12 +19,13 @@ namespace ApiQuickBooksDemo.Services
         private IRepository<Payments> _payments = null;
         private IRepository<VendorVisits> _vendorVisits = null;
         private IRepository<Invoices> _invoices = null;
+        private IRepository<InvoiceDetails> _invoicesDetail = null;
         private IRepository<DeliveryOrders> _deliveryOrders = null;
         private IRepository<Roles> _roles = null;
         private IRepository<Users> _users = null;
         private IRepository<SyncTables> _syncTables = null;
         private IRepository<TransactionSyncLog> _transSyncLog = null;
-
+        private IRepository<OAuthTokens> _oAuthToken = null;
 
         private string _connectionString;
         private IDbConnectionFactory _dbFactory;
@@ -68,6 +69,18 @@ namespace ApiQuickBooksDemo.Services
                     _invoices = new ServiceStackRepository<Invoices>(_dbFactory);
 
                 return _invoices;
+            }
+
+        }
+
+        public IRepository<InvoiceDetails> InvoiceDetails
+        {
+            get
+            {
+                if (_invoicesDetail == null)
+                    _invoicesDetail = new ServiceStackRepository<InvoiceDetails>(_dbFactory);
+
+                return _invoicesDetail;
             }
 
         }
@@ -147,6 +160,18 @@ namespace ApiQuickBooksDemo.Services
                     _transSyncLog = new ServiceStackRepository<TransactionSyncLog>(_dbFactory);
 
                 return _transSyncLog;
+            }
+        }
+
+
+         public IRepository<OAuthTokens> Tokens
+        {
+            get
+            {
+                if (_oAuthToken == null)
+                    _oAuthToken = new ServiceStackRepository<OAuthTokens>(_dbFactory);
+
+                return _oAuthToken;
             }
         }
 

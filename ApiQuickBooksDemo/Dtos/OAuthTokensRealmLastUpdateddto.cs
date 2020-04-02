@@ -19,6 +19,7 @@ namespace Webhooks.Models.DTO
     public class OAuthTokensRealmLastUpdateddto
     {
 
+        public string realmId { get; set; }
 
         //Get OauthTokens table fields
         public OAuthTokens OAuthTokens { get; set; }

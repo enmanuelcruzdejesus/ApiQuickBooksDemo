@@ -27,9 +27,6 @@ namespace ApiQuickBooksDemo.Controllers
                 return Request.CreateResponse(HttpStatusCode.NoContent,"");
 
 
-
-
-
             }
             catch (Exception ex)
             {
@@ -39,8 +36,48 @@ namespace ApiQuickBooksDemo.Controllers
 
         }
 
+
+
         [HttpGet]
         public HttpResponseMessage Get(string id)
+        {
+            try
+            {
+
+                if (!string.IsNullOrEmpty(id) && !string.IsNullOrWhiteSpace(id))
+                {
+
+
+                    var deliveyOrder = AppConfig.Instance().Db.DeliveryOrders.GetLoadRerefence(v => v.IdDeliveryOrder == Convert.ToInt32(id));
+                    if (deliveyOrder.Count() > 0)
+                        return Request.CreateResponse(HttpStatusCode.OK, deliveyOrder);
+
+
+                    return Request.CreateResponse(HttpStatusCode.NoContent, "");
+
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid Id");
+                }
+
+
+
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+;
+
+        }
+
+
+
+        [HttpGet]
+        [Route("Download")]
+        public HttpResponseMessage Download(string id)
         {
             try
             {
@@ -111,7 +148,6 @@ namespace ApiQuickBooksDemo.Controllers
 
 
         [HttpPost]
-        [Route("CreateDeliveryOrder")]
         public HttpResponseMessage Post(DeliveryOrders delivery)
         {
             try

@@ -9,9 +9,11 @@ using System.Web.Http;
 
 namespace ApiQuickBooksDemo.Controllers
 {
+    [RoutePrefix("api/Customer")]
     public class CustomerController : ApiController
     {
         [HttpGet]
+        [Route("GetAll")]
         public HttpResponseMessage Get()
         {
             try
@@ -33,6 +35,7 @@ namespace ApiQuickBooksDemo.Controllers
 
 
         [HttpGet]
+        [Route("Download/{id}")]
         public HttpResponseMessage Get(string id)
         {
             try

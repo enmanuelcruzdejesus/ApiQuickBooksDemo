@@ -10,11 +10,19 @@ namespace ApiQuickBooksDemo.Entities
     {
         [PrimaryKey]
         [AutoIncrement]
+
         public int IdVendorVisit { get; set; }
         public int IdCustomer { get; set; }
+
+
         public int IdVendor { get; set; }
         public int IdSupervisor { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime LastUpdate { get; set; }
+
+
+        [Reference]
+        public Users Vendor { get; set; }
+    
     }
 }

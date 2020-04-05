@@ -10,15 +10,23 @@ using System.Web.Http;
 
 namespace ApiQuickBooksDemo.Controllers
 {
+    [RoutePrefix("api/VendorVisit")]
     public class VendorVisitController : ApiController
     {
         [HttpGet]
+        [Route("GetAll")]
+
         public HttpResponseMessage Get()
         {
             try
             {
-
-                var vendorVisits = AppConfig.Instance().Db.VendorVisits.GetAll();
+                var db = AppConfig.Instance().Db;
+                var vendorVisits = db.VendorVisits.GetAll();
+                foreach (var item in vendorVisits)
+                {
+                    var vendor = db.Users.Get(u => u.IdUser == item.IdVendor).FirstOrDefault();
+                    item.Vendor = vendor;
+                }
 
                 return Request.CreateResponse(HttpStatusCode.OK, vendorVisits);
 
@@ -36,6 +44,7 @@ namespace ApiQuickBooksDemo.Controllers
 
 
         [HttpGet]
+        [Route("GetById/{id}")]
         public HttpResponseMessage Get(string id)
         {
             try
@@ -73,7 +82,7 @@ namespace ApiQuickBooksDemo.Controllers
 
 
         [HttpGet]
-        [Route("Download")]
+        [Route("Download/{id}")]
         public HttpResponseMessage DownLoad(string id)
         {
             try
@@ -111,6 +120,7 @@ namespace ApiQuickBooksDemo.Controllers
 
 
         [HttpPut]
+        [Route("Update")]
         public HttpResponseMessage Put([FromBody] VendorVisits visit)
         {
             try
@@ -142,6 +152,7 @@ namespace ApiQuickBooksDemo.Controllers
 
 
         [HttpPost]
+        [Route("Create")]
         public HttpResponseMessage Post(VendorVisits visit)
         {
 

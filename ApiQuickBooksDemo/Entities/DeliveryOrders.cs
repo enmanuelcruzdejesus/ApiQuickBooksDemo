@@ -20,7 +20,10 @@ namespace ApiQuickBooksDemo.Entities
         public DateTime LastUpdate { get; set; }
 
         [Reference]
-        Invoices Invoice { get;set; }
+        public Invoices Invoice { get;set; }
+
+        [Reference]
+        public Users Delivery { get; set; }
 
 
     }

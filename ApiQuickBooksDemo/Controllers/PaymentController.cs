@@ -10,10 +10,12 @@ using System.Web.Http;
 
 namespace ApiQuickBooksDemo.Controllers
 {
+    [RoutePrefix("api/Payment")]
     public class PaymentController : ApiController
     {
 
         [HttpGet]
+        [Route("GetAll")]
         public HttpResponseMessage Get()
         {
             try
@@ -43,6 +45,7 @@ namespace ApiQuickBooksDemo.Controllers
 
 
         [HttpPost]
+        [Route("Upload")]
         public HttpResponseMessage Post([FromBody] List<Payments> payments)
         {
             try

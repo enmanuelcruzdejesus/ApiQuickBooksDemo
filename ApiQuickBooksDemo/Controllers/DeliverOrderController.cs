@@ -10,16 +10,25 @@ using System.Web.Http;
 
 namespace ApiQuickBooksDemo.Controllers
 {
+    [RoutePrefix("api/DeliverOrder")]
     public class DeliverOrderController : ApiController
     {
 
         [HttpGet]
+        [Route("GetAll")]
+
         public HttpResponseMessage Get()
         {
             try
             {
+                var db = AppConfig.Instance().Db;
+                var deliveryOrders = db.DeliveryOrders.GetAll();
+                foreach (var item in deliveryOrders)
+                {
+                    var delivery = db.Users.Get(u => u.IdUser == item.IdDelivery).FirstOrDefault();
+                    item.Delivery = delivery;
+                }
 
-                var deliveryOrders = AppConfig.Instance().Db.DeliveryOrders.GetLoadRerefence();
                 if (deliveryOrders.Count() > 0)
                     return Request.CreateResponse(HttpStatusCode.OK, deliveryOrders);
 
@@ -39,6 +48,7 @@ namespace ApiQuickBooksDemo.Controllers
 
 
         [HttpGet]
+        [Route("GetById/{id}")]
         public HttpResponseMessage Get(string id)
         {
             try
@@ -76,7 +86,7 @@ namespace ApiQuickBooksDemo.Controllers
 
 
         [HttpGet]
-        [Route("Download")]
+        [Route("Download/{id}")]
         public HttpResponseMessage Download(string id)
         {
             try
@@ -116,6 +126,7 @@ namespace ApiQuickBooksDemo.Controllers
 
 
         [HttpPut]
+        [Route("Update")]
         public HttpResponseMessage Put([FromBody] DeliveryOrders delivery)
         {
             try
@@ -148,6 +159,7 @@ namespace ApiQuickBooksDemo.Controllers
 
 
         [HttpPost]
+        [Route("Create")]
         public HttpResponseMessage Post(DeliveryOrders delivery)
         {
             try
@@ -173,6 +185,7 @@ namespace ApiQuickBooksDemo.Controllers
             }
 
         }
+
 
         [HttpPost]
         [Route("Upload")]

@@ -8,9 +8,11 @@ using System.Web.Http;
 
 namespace ApiQuickBooksDemo.Controllers
 {
+    [RoutePrefix("api/Invoice")]
     public class InvoiceController : ApiController
     {
         [HttpGet]
+        [Route("GetAll")]
         public HttpResponseMessage Get()
         {
             try
@@ -33,17 +35,18 @@ namespace ApiQuickBooksDemo.Controllers
 
 
         [HttpGet]
-        public HttpResponseMessage Get(int id)
+        [Route("Download/{id}")]
+        public HttpResponseMessage Get(string id)
         {
             try
             {
 
-                if (id > 0)
+                if (!string.IsNullOrEmpty(id) && !string.IsNullOrWhiteSpace(id))
                 {
 
 
-                    var lastUpdateSync = AppConfig.Instance().Db.GetLastUpdateDate(id, "Invoices");
-                    var invoices = AppConfig.Instance().Db.Invoices.Get(i => i.IdVendor == id && i.LastUpdate > lastUpdateSync);
+                    var lastUpdateSync = AppConfig.Instance().Db.GetLastUpdateDate(Convert.ToInt32(id), "Invoices");
+                    var invoices = AppConfig.Instance().Db.Invoices.Get(i => i.IdVendor == Convert.ToInt32(id) && i.LastUpdate > lastUpdateSync);
                     if (invoices.Count() > 0)
                         return Request.CreateResponse(HttpStatusCode.OK, invoices);
 

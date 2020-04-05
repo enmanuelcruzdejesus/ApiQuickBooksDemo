@@ -176,6 +176,20 @@ namespace ApiQuickBooksDemo.Services
         }
 
 
+        public IRepository<Users> Users
+        {
+            get
+            {
+                if (_users == null)
+                    _users = new ServiceStackRepository<Users>(_dbFactory);
+
+                return _users;
+            }
+        }
+
+
+
+
         public DateTime GetLastUpdateDate(int vendorId, string tableName)
         {
             using (var dbCmd = _dbFactory.Open().CreateCommand())

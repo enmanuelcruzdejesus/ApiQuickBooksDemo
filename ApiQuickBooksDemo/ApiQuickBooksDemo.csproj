@@ -417,7 +417,9 @@
     <Compile Include="Controllers\CallbackController.cs" />
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\DeliverOrderController.cs" />
+    <Compile Include="Controllers\DeliveryController.cs" />
     <Compile Include="Controllers\InvoiceController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\QboCustomerController.cs" />
@@ -426,9 +428,11 @@
     <Compile Include="Controllers\QboInvoiceController.cs" />
     <Compile Include="Controllers\ItemsController.cs" />
     <Compile Include="Controllers\QboPaymentController.cs" />
+    <Compile Include="Controllers\RegisterController.cs" />
     <Compile Include="Controllers\SalesOrderController.cs" />
     <Compile Include="Controllers\SyncTableController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="Controllers\VendorController.cs" />
     <Compile Include="Controllers\VendorVisitController.cs" />
     <Compile Include="Dtos\OAuthTokensRealmLastUpdateddto.cs" />
     <Compile Include="Dtos\WebhooksNotificationdto.cs" />
@@ -462,6 +466,7 @@
     <Compile Include="SessionStateRouteHandler.cs" />
     <Compile Include="Utils\DBUtility.cs" />
     <Compile Include="Utils\ProcessNotificationData.cs" />
+    <Compile Include="Utils\Services\LoginStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -493,6 +498,8 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\CollectionModelDescription.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
+    <None Include="Properties\PublishProfiles\ApiQuickBooksDemo20200402140023 - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\ApiQuickBooksDemo20200402140023 - Web Deploy1.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\InsertScriptWebhooks.sql" />
     <Content Include="Scripts\jquery-3.3.1.js" />

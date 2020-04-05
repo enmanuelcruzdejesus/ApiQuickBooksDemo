@@ -8,9 +8,11 @@ using System.Web.Http;
 
 namespace ApiQuickBooksDemo.Controllers
 {
+    [RoutePrefix("api/Product")]
     public class ProductController : ApiController
     {
         [HttpGet]
+        [Route("GetAll")]
         public HttpResponseMessage Get()
         {
             try
@@ -33,6 +35,7 @@ namespace ApiQuickBooksDemo.Controllers
 
 
         [HttpGet]
+        [Route("Download/{id}")]
         public HttpResponseMessage Get(string id)
         {
             try
@@ -45,7 +48,7 @@ namespace ApiQuickBooksDemo.Controllers
                     var lastUpdateSync = AppConfig.Instance().Db.GetLastUpdateDate(Convert.ToInt32(id), "Products");
                     var products = AppConfig.Instance().Db.Products.Get(c => c.LastUpdate > lastUpdateSync);
                     if (products.Count() > 0)
-                        Request.CreateResponse(HttpStatusCode.OK, products);
+                        return Request.CreateResponse(HttpStatusCode.OK, products);
 
 
                     return Request.CreateResponse(HttpStatusCode.NoContent, products);

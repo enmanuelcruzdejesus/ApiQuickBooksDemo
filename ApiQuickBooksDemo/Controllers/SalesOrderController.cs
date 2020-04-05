@@ -10,9 +10,11 @@ using System.Web.Http;
 
 namespace ApiQuickBooksDemo.Controllers
 {
+    [RoutePrefix("api/SalesOrder")]
     public class SalesOrderController : ApiController
     {
         [HttpGet]
+        [Route("GetAll")]
         public HttpResponseMessage Get()
         {
             try
@@ -39,6 +41,7 @@ namespace ApiQuickBooksDemo.Controllers
 
 
         [HttpPost]
+        [Route("Upload")]
         public HttpResponseMessage Post([FromBody] List<SalesOrders> orders)
         {
             try

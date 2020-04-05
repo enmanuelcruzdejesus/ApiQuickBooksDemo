@@ -34,8 +34,6 @@ namespace ApiQuickBooksDemo.Controllers
             AppController.realmId = HttpContext.Current.Request.QueryString["realmId"] ?? "none";
 
 
-            AppConfig.code = HttpContext.Current.Request.QueryString["code"] ?? "none";
-            AppConfig.realmId = HttpContext.Current.Request.QueryString["realmId"] ?? "none";
 
 
             await GetAuthTokensAsync(AppController.code, AppController.realmId);

@@ -42,8 +42,6 @@ namespace ApiQuickBooksDemo.Controllers
 
 
 
-
-
         [HttpPost]
         [Route("Upload")]
         public HttpResponseMessage Post([FromBody] List<Payments> payments)

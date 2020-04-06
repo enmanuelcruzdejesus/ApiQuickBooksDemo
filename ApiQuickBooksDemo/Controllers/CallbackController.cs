@@ -30,13 +30,13 @@ namespace ApiQuickBooksDemo.Controllers
             //Sync the state info and update if it is not the same
             var state = HttpContext.Current.Request.QueryString["state"];
          
-            AppController.code = HttpContext.Current.Request.QueryString["code"] ?? "none";
-            AppController.realmId = HttpContext.Current.Request.QueryString["realmId"] ?? "none";
+            var code = HttpContext.Current.Request.QueryString["code"] ?? "none";
+            var realmid = HttpContext.Current.Request.QueryString["realmId"] ?? "none";
 
 
 
 
-            await GetAuthTokensAsync(AppController.code, AppController.realmId);
+            await GetAuthTokensAsync(code, realmid);
             
 
             return Ok("TODO BN!");
@@ -49,7 +49,7 @@ namespace ApiQuickBooksDemo.Controllers
         private async Task GetAuthTokensAsync(string code, string realmId)
         {
 
-            var tokenResponse = await AppConfig.Instance().Auth2Client.GetBearerTokenAsync(AppConfig.code);        
+            var tokenResponse = await AppConfig.Instance().Auth2Client.GetBearerTokenAsync(code);        
             var db = AppConfig.Instance().Db;
              if (tokenResponse != null)
              {

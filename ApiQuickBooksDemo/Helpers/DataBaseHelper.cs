@@ -204,14 +204,16 @@ namespace ApiQuickBooksDemo.Helpers
 
         public static Invoices GetInvoice(Intuit.Ipp.Data.Invoice invoice)
         {
-
+            var db = AppConfig.Instance().Db;
             var orderRef = invoice.LinkedTxn.FirstOrDefault().TxnId;
             var IdOrder = GetOrderIdByRef(orderRef);
+            var IdVendor = db.SalesOrders.GetById(IdOrder).IdVendor;
 
             Invoices inv = new Invoices();
             inv.IdInvoice = GetInvoiceIdByRef(invoice.Id);
             inv.IdInvoiceRef = invoice.Id;
             inv.IdOrder = IdOrder;
+            inv.IdVendor = IdVendor;
             inv.DocNumber = Convert.ToInt32(invoice.DocNumber);
             inv.IdCustomer = GetCustomerIdByRef(invoice.CustomerRef.Value);
             inv.DueDate = invoice.DueDate;

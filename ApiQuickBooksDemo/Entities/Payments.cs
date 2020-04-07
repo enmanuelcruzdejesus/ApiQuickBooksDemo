@@ -19,6 +19,10 @@ namespace ApiQuickBooksDemo.Entities
         public int IdInvoice { get; set; }
         public int PaymentMethodRef { get; set; }
         public decimal TotalAmt { get; set; }
+
+        public string TranStatus { get; set; }
+        public int Status { get; set; }
+
         public DateTime CreatedDate { get; set; }
         public DateTime LastUpdate { get; set; }
 
